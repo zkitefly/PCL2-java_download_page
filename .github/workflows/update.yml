@@ -1,0 +1,79 @@
+name: update
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 2 * * *'
+  repository_dispatch:
+    types: [update]
+  push:
+    branches: [main]
+    paths: 
+      - '*.py'
+
+env:
+  WEBDAV_URL: ${{ secrets.WEBDAV_URL }}
+  WEBDAV_ACCOUNT: ${{ secrets.WEBDAV_ACCOUNT }}
+  WEBDAV_PASSWORD: ${{ secrets.WEBDAV_PASSWORD }}
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@main
+      - name: Set up Python
+        uses: actions/setup-python@main 
+        with:
+          python-version: '3.x'
+      - name: Install dependencies
+        run: |
+          python3 -m pip install requests
+      - name: checkout
+        id: checkout
+        shell: bash
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          wget -O ./pages/packages.json https://api.foojay.io/disco/v3.0/packages
+          wget -O ./123pan/packages.json https://api.foojay.io/disco/v3.0/packages
+          git add -A
+          if git diff-index --quiet HEAD; then
+            # No changes
+            echo 'changed=false' >> $GITHUB_OUTPUT
+          else
+            # Changes detected
+            echo 'changed=true' >> $GITHUB_OUTPUT
+          fi
+      - name: update pages
+        if: steps.checkout.outputs.changed == 'true'
+        shell: bash
+        run: |
+          rm -rf ./pages/choose
+          python3 ./pages/main.py
+          git add -A
+      - name: update 123pan
+        if: steps.checkout.outputs.changed == 'true'
+        shell: bash
+        run: |
+          rm -rf ./123pan/choose
+          python3 ./123pan/main.py
+          git add -A
+      - name: commit
+        if: steps.checkout.outputs.changed == 'true'
+        shell: bash
+        run: |
+          git commit -m "update"
+      - name: Push changes to GitHub
+        if: steps.checkout.outputs.changed == 'true'
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
+      - name: Push changes to 123pan
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y curl cadaver
+          echo -e "open $WEBDAV_URL\nlogin $WEBDAV_ACCOUNT $WEBDAV_PASSWORD\ncd PCL2-java_download_page\nrm *\nbye" | cadaver
+          find ./123pan -type f | while read file; do
+            relative_path="${file#./123pan/}"
+            curl -u "$WEBDAV_ACCOUNT:$WEBDAV_PASSWORD" -T "$file" "$WEBDAV_URL/PCL2-java_download_page/$relative_path"
+          done
