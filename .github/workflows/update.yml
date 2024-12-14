@@ -47,15 +47,19 @@ jobs:
         if: steps.checkout.outputs.changed == 'true'
         shell: bash
         run: |
-          rm -rf ./pages/choose
-          python3 ./pages/main.py
+          cd ./pages
+          rm -rf ./choose
+          python3 ./main.py
+          cd ../
           git add -A
       - name: update 123pan
         if: steps.checkout.outputs.changed == 'true'
         shell: bash
         run: |
-          rm -rf ./123pan/choose
-          python3 ./123pan/main.py
+          cd ./123pan
+          rm -rf ./choose
+          python3 ./main.py
+          cd ../
           git add -A
       - name: commit
         if: steps.checkout.outputs.changed == 'true'
@@ -69,6 +73,8 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: ${{ github.ref }}
       - name: Push changes to 123pan
+        if: steps.checkout.outputs.changed == 'true'
+        shell: bash
         run: |
           echo "Deleting existing files from WebDAV..."
           curl -u "${WEBDAV_ACCOUNT}:${WEBDAV_PASSWORD}" -X PROPFIND "${WEBDAV_URL}/PCL2-java_download_page/" | \
