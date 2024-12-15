@@ -207,7 +207,7 @@ def main():
     ]
     log(f"筛选完成，共 {len(filtered_packages)} 个有效包")
 
-    with ThreadPoolExecutor(max_workers=5) as executor:
+    with ThreadPoolExecutor(max_workers=100) as executor:
         futures = [executor.submit(process_distribution, dist, filtered_packages, template_1, template_2) for dist in SUPPORTED_DISTRIBUTIONS]
         for future in as_completed(futures):
             future.result()
