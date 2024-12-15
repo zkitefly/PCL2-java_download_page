@@ -2,13 +2,14 @@ name: update
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 2 * * *'
+    - cron: '0 2 * * 0'
   repository_dispatch:
     types: [update]
   push:
     branches: [main]
     paths: 
-      - '*.py'
+      - '/123pan/123pan.py'
+      - '/choose/main.py'
 
 env:
   WEBDAV_URL: ${{ secrets.WEBDAV_URL }}
@@ -51,11 +52,7 @@ jobs:
           python3 ./main.py
           cd ../
           git add -A
-      - name: commit
-        if: steps.checkout.outputs.changed == 'true'
-        shell: bash
-        run: |
-          git commit -m "update"
+          git commit -m "↑updata↑"
       - name: Push changes to GitHub
         if: steps.checkout.outputs.changed == 'true'
         uses: ad-m/github-push-action@master
