@@ -4,7 +4,8 @@ import requests
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # 支持的 distribution
-SUPPORTED_DISTRIBUTIONS = {"temurin", "liberica", "zulu", "graalvm", "semeru", "corretto"}
+# SUPPORTED_DISTRIBUTIONS = {"temurin", "liberica", "zulu", "graalvm", "semeru", "corretto"}
+SUPPORTED_DISTRIBUTIONS = {"zulu"}
 
 # 输出路径
 OUTPUT_DIR = "./choose"
