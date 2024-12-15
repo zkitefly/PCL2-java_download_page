@@ -1,6 +1,7 @@
 import json
 import os
 import requests
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # 支持的 distribution
 SUPPORTED_DISTRIBUTIONS = {"temurin", "liberica", "zulu", "graalvm", "semeru", "corretto"}
@@ -67,143 +68,144 @@ def fetch_direct_download_uri(pkg_info_uri):
         log(f"获取 direct_download_uri 失败：{e}")
         return ""
 
+# 多线程处理函数
+def process_archive_type(archive_type, java_version_packages, replacements, dir_structure):
+    archive_type_dir, template_2 = dir_structure
+    archive_type_xaml_path = os.path.join(archive_type_dir, f"{archive_type}.xaml")
+
+    log(f"处理文件类型：{archive_type}")
+    current_type_packages = [pkg for pkg in java_version_packages if pkg["archive_type"] == archive_type]
+    if not current_type_packages:
+        log(f"未找到与 {archive_type} 匹配的包，跳过")
+        return
+
+    pkg_info_uri = current_type_packages[0]["links"]["pkg_info_uri"]
+    direct_download_uri = fetch_direct_download_uri(pkg_info_uri)
+    replacements.update({
+        "title": "下载！",
+        "page-number": "6/6",
+        "page": f"{replacements['page']}/{archive_type}/{archive_type}",
+        "file_name": current_type_packages[0]["filename"],
+        "download-url": direct_download_uri,
+        "info": f"https://api.foojay.io/disco/v3.0/packages/{current_type_packages[0]['id']}"
+    })
+    write_file(archive_type_xaml_path, generate_xaml(template_2, replacements))
+    write_json(archive_type_xaml_path.replace(".xaml", ".json"), {"Title": "Java 下载 - 下载！"})
+
 # 主逻辑
 def main():
     log("程序启动")
-    
-    # 加载数据
     packages = load_json("packages.json")["result"]
     template_1 = read_file("1.txt")
     template_2 = read_file("2.txt")
 
-    # 筛选数据
     filtered_packages = [
         pkg for pkg in packages
         if pkg.get("size", 0) > 1 and pkg.get("distribution") in SUPPORTED_DISTRIBUTIONS
     ]
     log(f"筛选完成，共 {len(filtered_packages)} 个有效包")
 
-    for distribution in SUPPORTED_DISTRIBUTIONS:
-        log(f"处理 distribution：{distribution}")
-        dist_packages = [pkg for pkg in filtered_packages if pkg["distribution"] == distribution]
-        if not dist_packages:
-            log(f"跳过 distribution：{distribution}（无有效包）")
-            continue
+    with ThreadPoolExecutor() as executor:
+        future_to_task = []
 
-        # 生成 distribution 级别的文件
-        distribution_dir = os.path.join(OUTPUT_DIR, distribution)
-        distribution_xaml_path = os.path.join(distribution_dir, f"{distribution}.xaml")
-        
-        operating_systems = [f"{pkg['operating_system']}-{pkg['architecture']}" for pkg in dist_packages]
-        replacements = {
-            "title": "选择系统类型和系统架构",
-            "page-number": "1/6",
-            "page": f"{dir}/{distribution}/{distribution}",
-            "choose": generate_combobox_items(operating_systems),
-            "next_page-url": f"https://zkitefly.github.io/PCL2-java_download_page/{dir}/{distribution}/{{0}}/{{0}}.json"
-        }
-        write_file(distribution_xaml_path, generate_xaml(template_1, replacements))
-        write_json(distribution_xaml_path.replace(".xaml", ".json"), {"Title": "Java 下载 - 选择系统类型和系统架构"})
+        for distribution in SUPPORTED_DISTRIBUTIONS:
+            dist_packages = [pkg for pkg in filtered_packages if pkg["distribution"] == distribution]
+            if not dist_packages:
+                log(f"跳过 distribution：{distribution}（无有效包）")
+                continue
 
-        for os_arch in operating_systems:
-            log(f"处理操作系统架构：{os_arch}")
-            os_arch_packages = [pkg for pkg in dist_packages if f"{pkg['operating_system']}-{pkg['architecture']}" == os_arch]
-            os_arch_dir = os.path.join(distribution_dir, os_arch)
-            os_arch_xaml_path = os.path.join(os_arch_dir, f"{os_arch}.xaml")
-            
-            major_versions = [pkg["major_version"] for pkg in os_arch_packages]
+            distribution_dir = os.path.join(OUTPUT_DIR, distribution)
+            distribution_xaml_path = os.path.join(distribution_dir, f"{distribution}.xaml")
+
+            operating_systems = [f"{pkg['operating_system']}-{pkg['architecture']}" for pkg in dist_packages]
             replacements = {
-                "title": "选择 Java 大版本",
-                "page-number": "2/6",
-                "page": f"{dir}/{distribution}/{os_arch}/{os_arch}",
-                "choose": generate_combobox_items(major_versions),
-                "next_page-url": f"https://zkitefly.github.io/PCL2-java_download_page/{dir}/{distribution}/{os_arch}/{{0}}/{{0}}.json"
+                "title": "选择系统类型和系统架构",
+                "page-number": "1/6",
+                "page": f"{dir}/{distribution}/{distribution}",
+                "choose": generate_combobox_items(operating_systems),
+                "next_page-url": f"https://zkitefly.github.io/PCL2-java_download_page/{dir}/{distribution}/{{0}}/{{0}}.json"
             }
-            write_file(os_arch_xaml_path, generate_xaml(template_1, replacements))
-            write_json(os_arch_xaml_path.replace(".xaml", ".json"), {"Title": "Java 下载 - 选择 Java 大版本"})
+            write_file(distribution_xaml_path, generate_xaml(template_1, replacements))
+            write_json(distribution_xaml_path.replace(".xaml", ".json"), {"Title": "Java 下载 - 选择系统类型和系统架构"})
 
-            for major_version in major_versions:
-                log(f"处理 Java 大版本：{major_version}")
-                major_version_packages = [pkg for pkg in os_arch_packages if pkg["major_version"] == major_version]
-                major_version_dir = os.path.join(os_arch_dir, str(major_version))
-                major_version_xaml_path = os.path.join(major_version_dir, f"{major_version}.xaml")
+            for os_arch in operating_systems:
+                os_arch_packages = [pkg for pkg in dist_packages if f"{pkg['operating_system']}-{pkg['architecture']}" == os_arch]
+                os_arch_dir = os.path.join(distribution_dir, os_arch)
+                os_arch_xaml_path = os.path.join(os_arch_dir, f"{os_arch}.xaml")
 
-                package_types = [
-                    f"{pkg['package_type']}{'fx' if pkg['javafx_bundled'] else ''}"
-                    for pkg in major_version_packages
-                ]
+                major_versions = [pkg["major_version"] for pkg in os_arch_packages]
                 replacements = {
-                    "title": "选择包类型",
-                    "page-number": "3/6",
-                    "page": f"{dir}/{distribution}/{os_arch}/{major_version}/{major_version}",
-                    "choose": generate_combobox_items(package_types),
-                    "next_page-url": f"https://zkitefly.github.io/PCL2-java_download_page/{dir}/{distribution}/{os_arch}/{major_version}/{{0}}/{{0}}.json"
+                    "title": "选择 Java 大版本",
+                    "page-number": "2/6",
+                    "page": f"{dir}/{distribution}/{os_arch}/{os_arch}",
+                    "choose": generate_combobox_items(major_versions),
+                    "next_page-url": f"https://zkitefly.github.io/PCL2-java_download_page/{dir}/{distribution}/{os_arch}/{{0}}/{{0}}.json"
                 }
-                write_file(major_version_xaml_path, generate_xaml(template_1, replacements))
-                write_json(major_version_xaml_path.replace(".xaml", ".json"), {"Title": "Java 下载 - 选择包类型"})
+                write_file(os_arch_xaml_path, generate_xaml(template_1, replacements))
+                write_json(os_arch_xaml_path.replace(".xaml", ".json"), {"Title": "Java 下载 - 选择 Java 大版本"})
 
-                for package_type in package_types:
-                    log(f"处理包类型：{package_type}")
-                    pkg_packages = [
-                        pkg for pkg in major_version_packages
-                        if f"{pkg['package_type']}{'fx' if pkg['javafx_bundled'] else ''}" == package_type
+                for major_version in major_versions:
+                    major_version_packages = [pkg for pkg in os_arch_packages if pkg["major_version"] == major_version]
+                    major_version_dir = os.path.join(os_arch_dir, str(major_version))
+                    major_version_xaml_path = os.path.join(major_version_dir, f"{major_version}.xaml")
+
+                    package_types = [
+                        f"{pkg['package_type']}{'fx' if pkg['javafx_bundled'] else ''}"
+                        for pkg in major_version_packages
                     ]
-                    pkg_dir = os.path.join(major_version_dir, package_type)
-                    pkg_xaml_path = os.path.join(pkg_dir, f"{package_type}.xaml")
-
-                    java_versions = [pkg["java_version"] for pkg in pkg_packages]
                     replacements = {
-                        "title": "选择 Java 版本",
-                        "page-number": "4/6",
-                        "page": f"{dir}/{distribution}/{os_arch}/{major_version}/{package_type}/{package_type}",
-                        "choose": generate_combobox_items(java_versions),
-                        "next_page-url": f"https://zkitefly.github.io/PCL2-java_download_page/{dir}/{distribution}/{os_arch}/{major_version}/{package_type}/{{0}}/{{0}}.json"
+                        "title": "选择包类型",
+                        "page-number": "3/6",
+                        "page": f"{dir}/{distribution}/{os_arch}/{major_version}/{major_version}",
+                        "choose": generate_combobox_items(package_types),
+                        "next_page-url": f"https://zkitefly.github.io/PCL2-java_download_page/{dir}/{distribution}/{os_arch}/{major_version}/{{0}}/{{0}}.json"
                     }
-                    write_file(pkg_xaml_path, generate_xaml(template_1, replacements))
-                    write_json(pkg_xaml_path.replace(".xaml", ".json"), {"Title": "Java 下载 - 选择 Java 版本"})
+                    write_file(major_version_xaml_path, generate_xaml(template_1, replacements))
+                    write_json(major_version_xaml_path.replace(".xaml", ".json"), {"Title": "Java 下载 - 选择包类型"})
 
-                    for java_version in java_versions:
-                        log(f"处理 Java 版本：{java_version}")
-                        java_version_packages = [pkg for pkg in pkg_packages if pkg["java_version"] == java_version]
-                        java_version_dir = os.path.join(pkg_dir, java_version)
-                        java_version_xaml_path = os.path.join(java_version_dir, f"{java_version}.xaml")
+                    for package_type in package_types:
+                        log(f"处理包类型：{package_type}")
+                        pkg_dir = os.path.join(major_version_dir, package_type)
+                        pkg_xaml_path = os.path.join(pkg_dir, f"{package_type}.xaml")
 
-                        archive_types = [pkg["archive_type"] for pkg in java_version_packages]
+                        java_versions = [pkg["java_version"] for pkg in major_version_packages if f"{pkg['package_type']}{'fx' if pkg['javafx_bundled'] else ''}" == package_type]
                         replacements = {
-                            "title": "选择文件类型",
-                            "page-number": "5/6",
-                            "page": f"{dir}/{distribution}/{os_arch}/{major_version}/{package_type}/{java_version}/{java_version}",
-                            "choose": generate_combobox_items(archive_types),
-                            "next_page-url": f"https://zkitefly.github.io/PCL2-java_download_page/{dir}/{distribution}/{os_arch}/{major_version}/{package_type}/{java_version}/{{0}}/{{0}}.json"
+                            "title": "选择 Java 版本",
+                            "page-number": "4/6",
+                            "page": f"{dir}/{distribution}/{os_arch}/{major_version}/{package_type}/{package_type}",
+                            "choose": generate_combobox_items(java_versions),
+                            "next_page-url": f"https://zkitefly.github.io/PCL2-java_download_page/{dir}/{distribution}/{os_arch}/{major_version}/{package_type}/{{0}}/{{0}}.json"
                         }
-                        write_file(java_version_xaml_path, generate_xaml(template_1, replacements))
-                        write_json(java_version_xaml_path.replace(".xaml", ".json"), {"Title": "Java 下载 - 选择文件类型"})
+                        write_file(pkg_xaml_path, generate_xaml(template_1, replacements))
+                        write_json(pkg_xaml_path.replace(".xaml", ".json"), {"Title": "Java 下载 - 选择 Java 版本"})
 
-                        for archive_type in archive_types:
-                            log(f"处理文件类型：{archive_type}")
-                            archive_type_dir = os.path.join(java_version_dir, archive_type)
-                            archive_type_xaml_path = os.path.join(archive_type_dir, f"{archive_type}.xaml")
+                        for java_version in java_versions:
+                            log(f"处理 Java 版本：{java_version}")
+                            java_version_packages = [pkg for pkg in major_version_packages if pkg["java_version"] == java_version]
+                            java_version_dir = os.path.join(pkg_dir, java_version)
+                            java_version_xaml_path = os.path.join(java_version_dir, f"{java_version}.xaml")
 
-                            # 根据 archive_type 筛选出对应的包
-                            current_type_packages = [pkg for pkg in java_version_packages if pkg["archive_type"] == archive_type]
-                            if not current_type_packages:
-                                log(f"未找到与 {archive_type} 匹配的包，跳过")
-                                continue
-
-                            # 提取 direct_download_uri
-                            pkg_info_uri = current_type_packages[0]["links"]["pkg_info_uri"]
-                            direct_download_uri = fetch_direct_download_uri(pkg_info_uri)
-
+                            archive_types = [pkg["archive_type"] for pkg in java_version_packages]
                             replacements = {
-                                "title": "下载！",
-                                "page-number": "6/6",
-                                "page": f"{dir}/{distribution}/{os_arch}/{major_version}/{package_type}/{java_version}/{archive_type}/{archive_type}",
-                                "file_name": current_type_packages[0]["filename"],
-                                "download-url": direct_download_uri,
-                                "info": f"https://api.foojay.io/disco/v3.0/packages/{current_type_packages[0]['id']}"
+                                "title": "选择文件类型",
+                                "page-number": "5/6",
+                                "page": f"{dir}/{distribution}/{os_arch}/{major_version}/{package_type}/{java_version}/{java_version}",
+                                "choose": generate_combobox_items(archive_types),
+                                "next_page-url": f"https://zkitefly.github.io/PCL2-java_download_page/{dir}/{distribution}/{os_arch}/{major_version}/{package_type}/{java_version}/{{0}}/{{0}}.json"
                             }
-                            write_file(archive_type_xaml_path, generate_xaml(template_2, replacements))
-                            write_json(archive_type_xaml_path.replace(".xaml", ".json"), {"Title": "Java 下载 - 下载！"})
+                            write_file(java_version_xaml_path, generate_xaml(template_1, replacements))
+                            write_json(java_version_xaml_path.replace(".xaml", ".json"), {"Title": "Java 下载 - 选择文件类型"})
+
+                            for archive_type in archive_types:
+                                dir_structure = (os.path.join(java_version_dir, archive_type), template_2)
+                                future = executor.submit(process_archive_type, archive_type, java_version_packages, replacements, dir_structure)
+                                future_to_task.append(future)
+
+        for future in as_completed(future_to_task):
+            try:
+                future.result()
+            except Exception as exc:
+                log(f"任务执行失败：{exc}")
 
     log("程序结束")
 
