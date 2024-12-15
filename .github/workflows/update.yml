@@ -52,15 +52,6 @@ jobs:
           python3 ./main.py
           cd ../
           git add -A
-      - name: update 123pan
-        if: steps.checkout.outputs.changed == 'true'
-        shell: bash
-        run: |
-          cd ./123pan
-          rm -rf ./choose
-          python3 ./main.py
-          cd ../
-          git add -A
       - name: commit
         if: steps.checkout.outputs.changed == 'true'
         shell: bash
@@ -72,10 +63,15 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: ${{ github.ref }}
-      - name: Push changes to 123pan
+      - name: update 123pan and push changes to 123pan
         if: steps.checkout.outputs.changed == 'true'
         shell: bash
         run: |
+          # 拷贝一份 docs 的文件到 123pan目录
+          cp -r ./docs/* ./123pan/
+          cd ./123pan
+          python3 ./123pan.py
+          cd ../
           echo "Deleting existing files from WebDAV..."
           curl -u "${WEBDAV_ACCOUNT}:${WEBDAV_PASSWORD}" -X PROPFIND "${WEBDAV_URL}/PCL2-java_download_page/" | \
           grep '<D:href>' | \
