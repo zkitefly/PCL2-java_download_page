@@ -184,17 +184,23 @@ def main():
                             archive_type_dir = os.path.join(java_version_dir, archive_type)
                             archive_type_xaml_path = os.path.join(archive_type_dir, f"{archive_type}.xaml")
 
+                            # 根据 archive_type 筛选出对应的包
+                            current_type_packages = [pkg for pkg in java_version_packages if pkg["archive_type"] == archive_type]
+                            if not current_type_packages:
+                                log(f"未找到与 {archive_type} 匹配的包，跳过")
+                                continue
+
                             # 提取 direct_download_uri
-                            pkg_info_uri = java_version_packages[0]["links"]["pkg_info_uri"]
+                            pkg_info_uri = current_type_packages[0]["links"]["pkg_info_uri"]
                             direct_download_uri = fetch_direct_download_uri(pkg_info_uri)
 
                             replacements = {
                                 "title": "下载！",
                                 "page-number": "6/6",
                                 "page": f"{dir}/{distribution}/{os_arch}/{major_version}/{package_type}/{java_version}/{archive_type}/{archive_type}",
-                                "file_name": java_version_packages[0]["filename"],
-                                "download-url": direct_download_uri,  # 使用 direct_download_uri
-                                "info": f"https://api.foojay.io/disco/v3.0/packages/{java_version_packages[0]['id']}"
+                                "file_name": current_type_packages[0]["filename"],
+                                "download-url": direct_download_uri,
+                                "info": f"https://api.foojay.io/disco/v3.0/packages/{current_type_packages[0]['id']}"
                             }
                             write_file(archive_type_xaml_path, generate_xaml(template_2, replacements))
                             write_json(archive_type_xaml_path.replace(".xaml", ".json"), {"Title": "Java 下载 - 下载！"})
