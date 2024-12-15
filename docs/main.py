@@ -178,7 +178,8 @@ def process_distribution(distribution, filtered_packages, template_1, template_2
 
                         # 提取 direct_download_uri
                         pkg_info_uri = current_type_packages[0]["links"]["pkg_info_uri"]
-                        direct_download_uri = fetch_direct_download_uri(pkg_info_uri)
+                        pkg_download_redirect = current_type_packages[0]["links"]["pkg_download_redirect"]
+                        direct_download_uri = pkg_download_redirect
 
                         replacements = {
                             "title": "下载！",
