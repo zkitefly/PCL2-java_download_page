@@ -47,7 +47,7 @@ jobs:
         if: steps.checkout.outputs.changed == 'true'
         shell: bash
         run: |
-          cd ./pages
+          cd ./docs
           rm -rf ./choose
           python3 ./main.py
           cd ../
