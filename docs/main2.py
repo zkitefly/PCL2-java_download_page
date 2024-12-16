@@ -206,7 +206,7 @@ def main():
                             }
                             write_file(archive_type_xaml_path, generate_xaml(template_2, replacements))
                             write_json(archive_type_xaml_path.replace(".xaml", ".json"), {"Title": "Java 下载 - 下载！"})
-                            log(f"{dir}/{distribution}/{os_arch}/{major_version}/{package_type}/{java_version}/{archive_type}/{archive_type}")
+                            # log(f"{dir}/{distribution}/{os_arch}/{major_version}/{package_type}/{java_version}/{archive_type}/{archive_type}")
 
     log("程序结束")
 
