@@ -49,7 +49,7 @@ def generate_xaml(template, replacements):
 # 根据属性生成 <local:MyComboBoxItem> 内容
 def generate_combobox_items(values):
     unique_values = sorted(set(values))  # 去重并排序
-    log(f"生成下拉框内容，共 {len(unique_values)} 项")
+    # log(f"生成下拉框内容，共 {len(unique_values)} 项")
     return "\n".join(f'<local:MyComboBoxItem Content="{value}"/>' for value in unique_values)
 
 # 获取 direct_download_uri
@@ -81,13 +81,13 @@ def main():
         pkg for pkg in packages
         if pkg.get("size", 0) > 1 and pkg.get("distribution") in SUPPORTED_DISTRIBUTIONS
     ]
-    log(f"筛选完成，共 {len(filtered_packages)} 个有效包")
+    # log(f"筛选完成，共 {len(filtered_packages)} 个有效包")
 
     for distribution in SUPPORTED_DISTRIBUTIONS:
         log(f"处理 distribution：{distribution}")
         dist_packages = [pkg for pkg in filtered_packages if pkg["distribution"] == distribution]
         if not dist_packages:
-            log(f"跳过 distribution：{distribution}（无有效包）")
+            # log(f"跳过 distribution：{distribution}（无有效包）")
             continue
 
         # 生成 distribution 级别的文件
@@ -106,7 +106,7 @@ def main():
         write_json(distribution_xaml_path.replace(".xaml", ".json"), {"Title": "Java 下载 - 选择系统类型和系统架构"})
 
         for os_arch in operating_systems:
-            log(f"处理操作系统架构：{os_arch}")
+            # log(f"处理操作系统架构：{os_arch}")
             os_arch_packages = [pkg for pkg in dist_packages if f"{pkg['operating_system']}-{pkg['architecture']}" == os_arch]
             os_arch_dir = os.path.join(distribution_dir, os_arch)
             os_arch_xaml_path = os.path.join(os_arch_dir, f"{os_arch}.xaml")
@@ -123,7 +123,7 @@ def main():
             write_json(os_arch_xaml_path.replace(".xaml", ".json"), {"Title": "Java 下载 - 选择 Java 大版本"})
 
             for major_version in major_versions:
-                log(f"处理 Java 大版本：{major_version}")
+                # log(f"处理 Java 大版本：{major_version}")
                 major_version_packages = [pkg for pkg in os_arch_packages if pkg["major_version"] == major_version]
                 major_version_dir = os.path.join(os_arch_dir, str(major_version))
                 major_version_xaml_path = os.path.join(major_version_dir, f"{major_version}.xaml")
@@ -143,7 +143,7 @@ def main():
                 write_json(major_version_xaml_path.replace(".xaml", ".json"), {"Title": "Java 下载 - 选择包类型"})
 
                 for package_type in package_types:
-                    log(f"处理包类型：{package_type}")
+                    # log(f"处理包类型：{package_type}")
                     pkg_packages = [
                         pkg for pkg in major_version_packages
                         if f"{pkg['package_type']}{'fx' if pkg['javafx_bundled'] else ''}" == package_type
@@ -163,7 +163,7 @@ def main():
                     write_json(pkg_xaml_path.replace(".xaml", ".json"), {"Title": "Java 下载 - 选择 Java 版本"})
 
                     for java_version in java_versions:
-                        log(f"处理 Java 版本：{java_version}")
+                        # log(f"处理 Java 版本：{java_version}")
                         java_version_packages = [pkg for pkg in pkg_packages if pkg["java_version"] == java_version]
                         java_version_dir = os.path.join(pkg_dir, java_version)
                         java_version_xaml_path = os.path.join(java_version_dir, f"{java_version}.xaml")
@@ -180,7 +180,7 @@ def main():
                         write_json(java_version_xaml_path.replace(".xaml", ".json"), {"Title": "Java 下载 - 选择文件类型"})
 
                         for archive_type in archive_types:
-                            log(f"处理文件类型：{archive_type}")
+                            # log(f"处理文件类型：{archive_type}")
                             archive_type_dir = os.path.join(java_version_dir, archive_type)
                             archive_type_xaml_path = os.path.join(archive_type_dir, f"{archive_type}.xaml")
 
@@ -206,6 +206,7 @@ def main():
                             }
                             write_file(archive_type_xaml_path, generate_xaml(template_2, replacements))
                             write_json(archive_type_xaml_path.replace(".xaml", ".json"), {"Title": "Java 下载 - 下载！"})
+                            log(f"{dir}/{distribution}/{os_arch}/{major_version}/{package_type}/{java_version}/{archive_type}/{archive_type}")
 
     log("程序结束")
 
