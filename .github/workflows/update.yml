@@ -2,14 +2,15 @@ name: update
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 2 * * 0'
+    - cron: '0 2 * * 5'
   repository_dispatch:
     types: [update]
   push:
     branches: [main]
     paths: 
       - '/123pan/123pan.py'
-      - '/choose/main.py'
+      - '/docs/main.py'
+      - '/docs/main2.py'
 
 env:
   WEBDAV_URL: ${{ secrets.WEBDAV_URL }}
@@ -49,7 +50,7 @@ jobs:
         run: |
           cd ./docs
           rm -rf ./choose
-          python3 ./main.py
+          python3 ./main2.py
           cd ../
           git add -A
           git commit -m "↑updata↑"
@@ -59,26 +60,26 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: ${{ github.ref }}
-      - name: update 123pan and push changes to 123pan
-        if: steps.checkout.outputs.changed == 'true'
-        shell: bash
-        run: |
-          # 拷贝一份 docs 的文件到 123pan目录
-          cp -r ./docs/* ./123pan/
-          cd ./123pan
-          python3 ./123pan.py
-          cd ../
-          echo "Deleting existing files from WebDAV..."
-          curl -u "${WEBDAV_ACCOUNT}:${WEBDAV_PASSWORD}" -X PROPFIND "${WEBDAV_URL}/PCL2-java_download_page/" | \
-          grep '<D:href>' | \
-          sed 's/.*<D:href>\(.*\)<\/D:href>.*/\1/' | \
-          while read -r path; do
-            if [[ "$path" != "${WEBDAV_URL}/PCL2-java_download_page/" ]]; then
-              curl -u "${WEBDAV_ACCOUNT}:${WEBDAV_PASSWORD}" -X DELETE "${WEBDAV_URL}${path}"
-            fi
-          done
-          echo "Uploading files to WebDAV..."
-          find ./123pan -type f | while read -r file; do
-            remote_path="${WEBDAV_URL}/PCL2-java_download_page/${file#./123pan/}"
-            curl -u "${WEBDAV_ACCOUNT}:${WEBDAV_PASSWORD}" --create-dirs -T "$file" "$remote_path"
-          done
+      # - name: update 123pan and push changes to 123pan
+      #   if: steps.checkout.outputs.changed == 'true'
+      #   shell: bash
+      #   run: |
+      #     # 拷贝一份 docs 的文件到 123pan目录
+      #     cp -r ./docs/* ./123pan/
+      #     cd ./123pan
+      #     python3 ./123pan.py
+      #     cd ../
+      #     echo "Deleting existing files from WebDAV..."
+      #     curl -u "${WEBDAV_ACCOUNT}:${WEBDAV_PASSWORD}" -X PROPFIND "${WEBDAV_URL}/PCL2-java_download_page/" | \
+      #     grep '<D:href>' | \
+      #     sed 's/.*<D:href>\(.*\)<\/D:href>.*/\1/' | \
+      #     while read -r path; do
+      #       if [[ "$path" != "${WEBDAV_URL}/PCL2-java_download_page/" ]]; then
+      #         curl -u "${WEBDAV_ACCOUNT}:${WEBDAV_PASSWORD}" -X DELETE "${WEBDAV_URL}${path}"
+      #       fi
+      #     done
+      #     echo "Uploading files to WebDAV..."
+      #     find ./123pan -type f | while read -r file; do
+      #       remote_path="${WEBDAV_URL}/PCL2-java_download_page/${file#./123pan/}"
+      #       curl -u "${WEBDAV_ACCOUNT}:${WEBDAV_PASSWORD}" --create-dirs -T "$file" "$remote_path"
+      #     done
