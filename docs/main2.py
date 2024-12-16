@@ -21,7 +21,7 @@ def read_file(path):
 
 # 写入文件内容
 def write_file(path, content):
-    log(f"写入文件：{path}")
+    # log(f"写入文件：{path}")
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, 'w', encoding='utf-8') as file:
         file.write(content)
@@ -34,7 +34,7 @@ def load_json(path):
 
 # 生成路径并写入 JSON
 def write_json(path, content):
-    log(f"生成 JSON 文件：{path}")
+    # log(f"生成 JSON 文件：{path}")
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, 'w', encoding='utf-8') as file:
         json.dump(content, file, ensure_ascii=False, indent=4)
@@ -81,7 +81,7 @@ def main():
         pkg for pkg in packages
         if pkg.get("size", 0) > 1 and pkg.get("distribution") in SUPPORTED_DISTRIBUTIONS
     ]
-    # log(f"筛选完成，共 {len(filtered_packages)} 个有效包")
+    log(f"筛选完成，共 {len(filtered_packages)} 个有效包")
 
     for distribution in SUPPORTED_DISTRIBUTIONS:
         log(f"处理 distribution：{distribution}")
@@ -187,7 +187,7 @@ def main():
                             # 根据 archive_type 筛选出对应的包
                             current_type_packages = [pkg for pkg in java_version_packages if pkg["archive_type"] == archive_type]
                             if not current_type_packages:
-                                log(f"未找到与 {archive_type} 匹配的包，跳过")
+                                # log(f"未找到与 {archive_type} 匹配的包，跳过")
                                 continue
 
                             # 提取 direct_download_uri
