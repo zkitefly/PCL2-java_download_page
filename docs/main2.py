@@ -215,6 +215,6 @@ def main():
 
 if __name__ == "__main__":
     try:
-        maim()
+        main()
     except TimeoutError:
         print("Function execution timeout!")
