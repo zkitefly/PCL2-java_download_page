@@ -28,7 +28,7 @@ jobs:
           python-version: '3.x'
       - name: Install dependencies
         run: |
-          python3 -m pip install requests
+          python3 -m pip install requests timeout-decorator
       - name: checkout
         id: checkout
         shell: bash
