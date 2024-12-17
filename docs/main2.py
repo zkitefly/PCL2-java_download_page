@@ -123,7 +123,7 @@ def main():
             write_json(os_arch_xaml_path.replace(".xaml", ".json"), {"Title": "Java 下载 - 选择 Java 大版本"})
 
             for major_version in major_versions:
-                # log(f"处理 Java 大版本：{major_version}")
+                log(f"处理 Java 大版本：{major_version}")
                 major_version_packages = [pkg for pkg in os_arch_packages if pkg["major_version"] == major_version]
                 major_version_dir = os.path.join(os_arch_dir, str(major_version))
                 major_version_xaml_path = os.path.join(major_version_dir, f"{major_version}.xaml")
