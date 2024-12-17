@@ -1,6 +1,7 @@
 import json
 import os
 import requests
+import timeout_decorator
 
 # 支持的 distribution
 SUPPORTED_DISTRIBUTIONS = {"temurin", "liberica", "zulu", "graalvm", "semeru", "corretto"}
@@ -68,6 +69,9 @@ def fetch_direct_download_uri(pkg_info_uri):
         return ""
 
 # 主逻辑
+# @timeout_decorator.timeout(3600, use_signals=False)
+@timeout_decorator.timeout(3600)
+
 def main():
     log("程序启动")
     
@@ -211,4 +215,7 @@ def main():
     log("程序结束")
 
 if __name__ == "__main__":
-    main()
+try:
+    maim()
+except TimeoutError:
+    print("Function execution timeout!")
