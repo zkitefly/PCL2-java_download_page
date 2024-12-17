@@ -71,7 +71,6 @@ def fetch_direct_download_uri(pkg_info_uri):
 # 主逻辑
 # @timeout_decorator.timeout(3600, use_signals=False)
 @timeout_decorator.timeout(3600)
-
 def main():
     log("程序启动")
     
@@ -215,7 +214,7 @@ def main():
     log("程序结束")
 
 if __name__ == "__main__":
-try:
-    maim()
-except TimeoutError:
-    print("Function execution timeout!")
+    try:
+        maim()
+    except TimeoutError:
+        print("Function execution timeout!")
