@@ -69,7 +69,7 @@ def fetch_direct_download_uri(pkg_info_uri):
         return ""
 
 # 主逻辑
-@timeout_decorator.timeout(3600, use_signals=False)
+# @timeout_decorator.timeout(3600, use_signals=False)
 # @timeout_decorator.timeout(3600)
 def main():
     log("程序启动")
@@ -86,7 +86,7 @@ def main():
     ]
     log(f"筛选完成，共 {len(filtered_packages)} 个有效包")
 
-    for distribution in SUPPORTED_DISTRIBUTIONS:
+    # for distribution in SUPPORTED_DISTRIBUTIONS:
         log(f"处理 distribution：{distribution}")
         dist_packages = [pkg for pkg in filtered_packages if pkg["distribution"] == distribution]
         if not dist_packages:
@@ -214,7 +214,8 @@ def main():
     log("程序结束")
 
 if __name__ == "__main__":
-    try:
-        main()
-    except TimeoutError:
-        print("Function execution timeout!")
+    main()
+    # try:
+    #     main()
+    # except TimeoutError:
+    #     print("Function execution timeout!")
