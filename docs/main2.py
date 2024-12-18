@@ -69,8 +69,8 @@ def fetch_direct_download_uri(pkg_info_uri):
         return ""
 
 # 主逻辑
-# @timeout_decorator.timeout(3600, use_signals=False)
-@timeout_decorator.timeout(3600)
+@timeout_decorator.timeout(3600, use_signals=False)
+# @timeout_decorator.timeout(3600)
 def main():
     log("程序启动")
     
