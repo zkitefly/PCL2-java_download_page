@@ -23,7 +23,7 @@ def read_file(path):
 
 # 写入文件内容
 def write_file(path, content):
-    log(f"写入文件：{path}")
+    # log(f"写入文件：{path}")
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, 'w', encoding='utf-8') as file:
         file.write(content)
@@ -36,7 +36,7 @@ def load_json(path):
 
 # 生成路径并写入 JSON
 def write_json(path, content):
-    log(f"生成 JSON 文件：{path}")
+    # log(f"生成 JSON 文件：{path}")
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, 'w', encoding='utf-8') as file:
         json.dump(content, file, ensure_ascii=False, indent=4)
@@ -51,7 +51,7 @@ def generate_xaml(template, replacements):
 # 根据属性生成 <local:MyComboBoxItem> 内容
 def generate_combobox_items(values):
     unique_values = sorted(set(values))  # 去重并排序
-    log(f"生成下拉框内容，共 {len(unique_values)} 项")
+    # log(f"生成下拉框内容，共 {len(unique_values)} 项")
     return "\n".join(f'<local:MyComboBoxItem Content="{value}"/>' for value in unique_values)
 
 # 获取 direct_download_uri
@@ -93,7 +93,7 @@ def process_distribution(distribution, filtered_packages, template_1, template_2
     write_json(distribution_xaml_path.replace(".xaml", ".json"), {"Title": "Java 下载 - 选择系统类型和系统架构"})
 
     for os_arch in operating_systems:
-        log(f"处理操作系统架构：{os_arch}")
+        # log(f"处理操作系统架构：{os_arch}")
         os_arch_packages = [pkg for pkg in dist_packages if f"{pkg['operating_system']}-{pkg['architecture']}" == os_arch]
         os_arch_dir = os.path.join(distribution_dir, os_arch)
         os_arch_xaml_path = os.path.join(os_arch_dir, f"{os_arch}.xaml")
@@ -110,7 +110,7 @@ def process_distribution(distribution, filtered_packages, template_1, template_2
         write_json(os_arch_xaml_path.replace(".xaml", ".json"), {"Title": "Java 下载 - 选择 Java 大版本"})
 
         for major_version in major_versions:
-            log(f"处理 Java 大版本：{major_version}")
+            # log(f"处理 Java 大版本：{major_version}")
             major_version_packages = [pkg for pkg in os_arch_packages if pkg["major_version"] == major_version]
             major_version_dir = os.path.join(os_arch_dir, str(major_version))
             major_version_xaml_path = os.path.join(major_version_dir, f"{major_version}.xaml")
@@ -130,7 +130,7 @@ def process_distribution(distribution, filtered_packages, template_1, template_2
             write_json(major_version_xaml_path.replace(".xaml", ".json"), {"Title": "Java 下载 - 选择包类型"})
 
             for package_type in package_types:
-                log(f"处理包类型：{package_type}")
+                # log(f"处理包类型：{package_type}")
                 pkg_packages = [
                     pkg for pkg in major_version_packages
                     if f"{pkg['package_type']}{'fx' if pkg['javafx_bundled'] else ''}" == package_type
@@ -150,7 +150,7 @@ def process_distribution(distribution, filtered_packages, template_1, template_2
                 write_json(pkg_xaml_path.replace(".xaml", ".json"), {"Title": "Java 下载 - 选择 Java 版本"})
 
                 for java_version in java_versions:
-                    log(f"处理 Java 版本：{java_version}")
+                    # log(f"处理 Java 版本：{java_version}")
                     java_version_packages = [pkg for pkg in pkg_packages if pkg["java_version"] == java_version]
                     java_version_dir = os.path.join(pkg_dir, java_version)
                     java_version_xaml_path = os.path.join(java_version_dir, f"{java_version}.xaml")
@@ -167,14 +167,14 @@ def process_distribution(distribution, filtered_packages, template_1, template_2
                     write_json(java_version_xaml_path.replace(".xaml", ".json"), {"Title": "Java 下载 - 选择文件类型"})
 
                     for archive_type in archive_types:
-                        log(f"处理文件类型：{archive_type}")
+                        # log(f"处理文件类型：{archive_type}")
                         archive_type_dir = os.path.join(java_version_dir, archive_type)
                         archive_type_xaml_path = os.path.join(archive_type_dir, f"{archive_type}.xaml")
 
                         # 根据 archive_type 筛选出对应的包
                         current_type_packages = [pkg for pkg in java_version_packages if pkg["archive_type"] == archive_type]
                         if not current_type_packages:
-                            log(f"未找到与 {archive_type} 匹配的包，跳过")
+                            # log(f"未找到与 {archive_type} 匹配的包，跳过")
                             continue
 
                         # 提取 direct_download_uri
@@ -209,7 +209,7 @@ def main():
     ]
     log(f"筛选完成，共 {len(filtered_packages)} 个有效包")
 
-    with ThreadPoolExecutor(max_workers=100) as executor:
+    with ThreadPoolExecutor(max_workers=10) as executor:
         futures = [executor.submit(process_distribution, dist, filtered_packages, template_1, template_2) for dist in SUPPORTED_DISTRIBUTIONS]
         for future in as_completed(futures):
             future.result()
