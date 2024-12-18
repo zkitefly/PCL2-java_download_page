@@ -86,7 +86,7 @@ def main():
     ]
     log(f"筛选完成，共 {len(filtered_packages)} 个有效包")
 
-    # for distribution in SUPPORTED_DISTRIBUTIONS:
+    for distribution in SUPPORTED_DISTRIBUTIONS:
         log(f"处理 distribution：{distribution}")
         dist_packages = [pkg for pkg in filtered_packages if pkg["distribution"] == distribution]
         if not dist_packages:
