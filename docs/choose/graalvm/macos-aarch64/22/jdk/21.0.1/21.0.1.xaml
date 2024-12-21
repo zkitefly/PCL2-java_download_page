@@ -1,0 +1,41 @@
+<local:MyCard Title="选择文件类型 - 5/6" Margin="0,5">
+    <StackPanel Margin="25,40,23,15">
+    <Grid>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="1*"/>
+        <ColumnDefinition Width="100"/> 
+      </Grid.ColumnDefinitions>
+      <local:MyComboBox x:Name="x" Height="30" HintText="0" SelectedIndex="0">
+        <local:MyComboBoxItem Content="zip"/>
+<local:MyComboBoxItem Content="tar.gz"/>
+      </local:MyComboBox>
+      <local:MyButton HorizontalAlignment="Center" Width="80"
+          Grid.Column="1" Text="确定->" EventType="打开帮助" 
+          EventData="{Binding Path=Text,ElementName=x,StringFormat=https://zkitefly.github.io/PCL2-java_download_page/choose/graalvm/macos-aarch64/22/jdk/21.0.1/{0}/{0}.json}"/>
+    </Grid>
+    </StackPanel>
+</local:MyCard>
+<local:MyCard Margin="0,5" Title="工具">
+     <StackPanel Margin="24,40,24,15">
+          <Grid>
+               <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="1*" />
+               </Grid.ColumnDefinitions>
+               <local:MyButton Grid.Column="0" Margin="0,0,10,0" Height="35" Text="打开下载器"
+                    EventType="打开帮助" EventData="https://zkitefly.github.io/PCL2-java_download_page/download.json" ToolTip="使用 PCL 的高速多线程下载引擎下载任意文件。" />
+               <local:MyButton Grid.Column="1" Margin="0,0,0,0" Height="35" Text="打开快捷跳转"
+                    EventType="打开帮助" EventData="https://zkitefly.github.io/PCL2-java_download_page/goto.json" ToolTip="输入主页路径快捷跳转对应主页页面。" />
+          </Grid>
+          <Grid>
+               <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="1*" />
+               </Grid.ColumnDefinitions>
+               <local:MyButton Grid.Column="0" Margin="0,10,10,0" Height="35" Text="复制当前路径"
+                    EventType="复制文本" EventData="choose/graalvm/macos-aarch64/22/jdk/21.0.1/21.0.1" ToolTip="复制当前页面的主页路径（choose/graalvm/macos-aarch64/22/jdk/21.0.1/21.0.1）。" />
+               <local:MyButton Grid.Column="1" Margin="0,10,0,0" Height="35" Text="回到开头←"
+                    EventType="切换页面" EventData="0|1" ToolTip="返回到开头页。" />
+          </Grid>
+     </StackPanel>
+</local:MyCard>

@@ -1,0 +1,33 @@
+<local:MyCard Title="下载！ - 6/6" Margin="0,5">
+    <StackPanel Margin="25,40,23,15">
+       <local:MyButton Margin="0,5,0,6" Width="250" Height="35" Text="下载文件" EventType="下载文件" EventData="https://api.foojay.io/disco/v3.0/ids/1da4c6f7907e2b64bf188d67b2f4dadd/redirect|graalvm-jdk-17.0.7_windows-x64_bin.zip" ToolTip="将使用 PCL 下载该文件。"/>
+       <local:MyButton Margin="0,5,0,6" Width="250" Height="35" Text="复制下载链接" EventType="复制文本" EventData="https://api.foojay.io/disco/v3.0/ids/1da4c6f7907e2b64bf188d67b2f4dadd/redirect" ToolTip="将复制 'https://api.foojay.io/disco/v3.0/ids/1da4c6f7907e2b64bf188d67b2f4dadd/redirect'。注意,此链接并不是真正的下载链接，该链接在访问后会重定向至真正的下载链接。若需要文件加速，需要获取原始下载链接后再配合加速服务下载。"/>
+       <local:MyButton Margin="0,5,0,6" Width="250" Height="35" Text="复制文本名称" EventType="复制文本" EventData="graalvm-jdk-17.0.7_windows-x64_bin.zip" ToolTip="文件名 '[file_name']。"/>
+       <local:MyButton Margin="0,5,0,6" Width="250" Height="35" Text="查询原始下载链接" EventType="打开网页" EventData="https://api.foojay.io/disco/v3.0/packages/1da4c6f7907e2b64bf188d67b2f4dadd" ToolTip="将打开 'https://api.foojay.io/disco/v3.0/ids/1da4c6f7907e2b64bf188d67b2f4dadd'，'direct_download_uri' 字段的值即为原始下载链接。"/>
+       <local:MyButton Margin="0,5,0,6" Width="250" Height="35" Text="文件详情" EventType="打开网页" EventData="将打开 https://api.foojay.io/disco/v3.0/packages/1da4c6f7907e2b64bf188d67b2f4dadd 查询文件详情。"/>
+    </StackPanel>
+</local:MyCard>
+<local:MyCard Margin="0,5" Title="工具">
+     <StackPanel Margin="24,40,24,15">
+          <Grid>
+               <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="1*" />
+               </Grid.ColumnDefinitions>
+               <local:MyButton Grid.Column="0" Margin="0,0,10,0" Height="35" Text="打开下载器"
+                    EventType="打开帮助" EventData="https://zkitefly.github.io/PCL2-java_download_page/download.json" ToolTip="使用 PCL 的高速多线程下载引擎下载任意文件。" />
+               <local:MyButton Grid.Column="1" Margin="0,0,0,0" Height="35" Text="打开快捷跳转"
+                    EventType="打开帮助" EventData="https://zkitefly.github.io/PCL2-java_download_page/goto.json" ToolTip="输入主页路径快捷跳转对应主页页面。" />
+          </Grid>
+          <Grid>
+               <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="1*" />
+               </Grid.ColumnDefinitions>
+               <local:MyButton Grid.Column="0" Margin="0,10,10,0" Height="35" Text="复制当前路径"
+                    EventType="复制文本" EventData="choose/graalvm/macos-x64/21/jdk/17.0.12/tar.gz/tar.gz" ToolTip="复制当前页面的主页路径（choose/graalvm/macos-x64/21/jdk/17.0.12/tar.gz/tar.gz）。" />
+               <local:MyButton Grid.Column="1" Margin="0,10,0,0" Height="35" Text="回到开头←"
+                    EventType="切换页面" EventData="0|1" ToolTip="返回到开头页。" />
+          </Grid>
+     </StackPanel>
+</local:MyCard>
