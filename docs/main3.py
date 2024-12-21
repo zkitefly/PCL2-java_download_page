@@ -113,13 +113,13 @@ def process_packages(packages_data, template_1, template_2, output_dir):
 
 def generate_choose_lines(filtered, os_key, arch_key):
     lines = []
-    for os_arch in get_unique_pairs(filtered, os_key, arch_key):
+    for os_arch in sorted(get_unique_pairs(filtered, os_key, arch_key), reverse=True):
         lines.append(f'<local:MyComboBoxItem Content="{os_arch[0]}-{os_arch[1]}"/>')
     return "\n".join(lines)
 
 def generate_choose_lines_for_major_version(filtered, os_arch):
     lines = [f'<local:MyComboBoxItem Content="{major_version}"/>'
-             for major_version in get_unique_values(filtered, 'major_version')]
+             for major_version in sorted(get_unique_values(filtered, 'major_version'), reverse=True)]
     return "\n".join(lines)
 
 def generate_choose_lines_for_package_type(filtered, pkg):
@@ -128,12 +128,12 @@ def generate_choose_lines_for_package_type(filtered, pkg):
 
 def generate_choose_lines_for_java_version(filtered):
     lines = [f'<local:MyComboBoxItem Content="{java_version}"/>'
-             for java_version in get_unique_values(filtered, 'java_version')]
+             for java_version in sorted(get_unique_values(filtered, 'java_version'), reverse=True)]
     return "\n".join(lines)
 
 def generate_choose_lines_for_archive_type(filtered):
     lines = [f'<local:MyComboBoxItem Content="{archive_type}"/>'
-             for archive_type in get_unique_values(filtered, 'archive_type')]
+             for archive_type in sorted(get_unique_values(filtered, 'archive_type'), reverse=True)]
     return "\n".join(lines)
 
 def get_unique_pairs(filtered, key1, key2):
