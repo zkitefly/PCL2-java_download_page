@@ -28,30 +28,33 @@ jobs:
           python-version: '3.x'
       - name: Install dependencies
         run: |
-          python3 -m pip install requests timeout-decorator
+          python3 -m pip install tqdm
       - name: checkout
         id: checkout
         shell: bash
         run: |
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          wget -O ./docs/packages.json https://api.foojay.io/disco/v3.0/packages
-          git add -A
-          if git diff-index --quiet HEAD; then
-            # No changes
-            echo 'changed=false' >> $GITHUB_OUTPUT
-          else
-            # Changes detected
-            echo 'changed=true' >> $GITHUB_OUTPUT
-          fi
-      - name: update pages
-        if: steps.checkout.outputs.changed == 'true'
-        shell: bash
-        run: |
-          cd ./docs
-          rm -rf ./choose
-          python3 ./main.py
-          cd ../
+          distributions=("temurin" "liberica" "zulu" "graalvm" "semeru" "corretto")
+          for distribution in "${distributions[@]}"
+          do
+              wget -O ./docs/${distribution}.json "https://api.foojay.io/disco/v3.0/packages?distribution=${distribution}"
+              git add -A
+              if git diff-index --quiet HEAD --; then
+                  echo "No changes detected for ${distribution}. Moving to next."
+                  continue
+              else
+                  echo "Changes detected for ${distribution}. Running 'python3 main3.py ${distribution}.json'"
+                  cd ./docs
+                  echo "======================"
+                  python3 main3.py ${distribution}.json
+                  echo "======================"
+                  cd ../
+                  echo 'changed=true' >> $GITHUB_OUTPUT
+                  exit 0
+              fi
+          done
+          echo 'changed=false' >> $GITHUB_OUTPUT
       - name: commit
         if: steps.checkout.outputs.changed == 'true'
         shell: bash

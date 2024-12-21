@@ -1,189 +1,171 @@
 import json
 import os
 import sys
-from collections import defaultdict
+from tqdm import tqdm
 
-def load_json(file_path):
-    """加载 JSON 文件"""
-    with open(file_path, 'r', encoding='utf-8') as f:
+def process_json_file(json_file):
+    with open(json_file, 'r') as f:
         return json.load(f)
 
-def write_file(file_path, content):
-    """写入文件"""
-    with open(file_path, 'w', encoding='utf-8') as f:
-        f.write(content)
-
-def process_xaml_template(template, replacements):
-    """处理 XAML 模板，替换相关内容"""
+def generate_xaml_from_template(template, replacements):
     for key, value in replacements.items():
         template = template.replace(f"[{key}]", value)
     return template
 
-def process_data(packages_data, template_1, template_2, output_dir):
-    """根据数据生成 xaml 文件并替换内容"""
-    distributions = defaultdict(list)
+def write_xaml_file(path, content):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, 'w') as f:
+        f.write(content)
 
-    # 筛选符合条件的数据
-    filtered_data = [
-        item for item in packages_data
-        if item.get("directly_downloadable") and item.get("free_use_in_production")
-        and item.get("major_version") != 6
+def process_packages(packages_data, template_1, template_2, output_dir):
+    # First filtering
+    filtered = [
+        package for package in packages_data['result']
+        if package['directly_downloadable'] and package['free_use_in_production'] and package['major_version'] != 6
     ]
-
-    # 遍历数据生成 xaml 文件
-    for item in filtered_data:
-        distribution = item["distribution"]
-        operating_system = item["operating_system"]
-        architecture = item["architecture"]
-        major_version = item["major_version"]
-        package_type = item["package_type"]
-        javafx_bundled = item["javafx_bundled"]
-        java_version = item["java_version"]
-        archive_type = item["archive_type"]
-        filename = item["filename"]
-        pkg_download_url = item["links"]["pkg_download_redirect"]
-        pkg_info_url = item["links"]["pkg_info_uri"]
-
-        # 创建分发路径
-        dist_path = os.path.join(output_dir, distribution)
-        os.makedirs(dist_path, exist_ok=True)
-
-        # 生成模板替换内容
-        template = template_1
+    
+    for package in tqdm(filtered):
+        distribution = package['distribution']
+        base_path = os.path.join(output_dir, distribution)
+        
+        # Step 1: Generate /[distribution]/[distribution].xaml
+        distribution_xaml_path = os.path.join(base_path, f"{distribution}.xaml")
         replacements = {
-            "title": "选择系统类型和系统架构",
-            "page-number": "1/6",
-            "page": f"{distribution}/{distribution}.xaml",
-            "xaml": "json",
-            "choose": generate_system_arch_content(filtered_data),
-            "next_page-url": f"https://baidu.com/{distribution}/{distribution}.json"
+            'title': "选择系统类型和系统架构",
+            'page-number': "1/6",
+            'page': f"{output_dir2}/{distribution}/{distribution}",
+            'xaml': "json",
+            'choose': generate_choose_lines(filtered, 'operating_system', 'architecture'),
+            'next_page-url': f"https://zkitefly.github.io/PCL2-java_download_page/{output_dir2}/{distribution}/{{0}}/{{0}}.json"
         }
+        write_xaml_file(distribution_xaml_path, generate_xaml_from_template(template_1, replacements))
 
-        # 生成系统架构的选择
-        xaml_content = process_xaml_template(template, replacements)
-        write_file(os.path.join(dist_path, f"{distribution}.xaml"), xaml_content)
+        # Step 2: Generate /[distribution]/[operating_system]-[architecture]/[operating_system]-[architecture].xaml
+        for os_arch in get_unique_pairs(filtered, 'operating_system', 'architecture'):
+            os_arch_path = os.path.join(base_path, f"{os_arch[0]}-{os_arch[1]}")
+            os_arch_xaml_path = os.path.join(os_arch_path, f"{os_arch[0]}-{os_arch[1]}.xaml")
+            replacements = {
+                'title': "选择 Java 大版本",
+                'page-number': "2/6",
+                'page': f"{output_dir2}/{distribution}/{os_arch[0]}-{os_arch[1]}/{os_arch[0]}-{os_arch[1]}",
+                'choose': generate_choose_lines_for_major_version(filtered, os_arch),
+                'next_page-url': f"https://zkitefly.github.io/PCL2-java_download_page/{output_dir2}/{distribution}/{os_arch[0]}-{os_arch[1]}/{{0}}/{{0}}.json"
+            }
+            write_xaml_file(os_arch_xaml_path, generate_xaml_from_template(template_1, replacements))
 
-        # 为系统架构-版本进一步生成 XAML 文件
-        os_arch = f"{operating_system}-{architecture}"
-        os_arch_path = os.path.join(dist_path, os_arch)
-        os.makedirs(os_arch_path, exist_ok=True)
-        
-        template = template_1
-        replacements.update({
-            "title": "选择 Java 大版本",
-            "page-number": "2/6",
-            "page": f"{distribution}/{os_arch}/{os_arch}.xaml",
-            "choose": generate_version_content(filtered_data),
-            "next_page-url": f"https://baidu.com/{distribution}/{os_arch}/{os_arch}.json"
-        })
-        xaml_content = process_xaml_template(template, replacements)
-        write_file(os.path.join(os_arch_path, f"{os_arch}.xaml"), xaml_content)
+            # Step 3: Generate /[distribution]/[operating_system]-[architecture]/[major_version]/[major_version].xaml
+            for major_version in get_unique_values(filtered, 'major_version'):
+                major_version_path = os.path.join(os_arch_path, str(major_version))
+                major_version_xaml_path = os.path.join(major_version_path, f"{major_version}.xaml")
+                pkg = f"{package['package_type']}{'fx' if package['javafx_bundled'] else ''}"
+                replacements = {
+                    'title': "选择包类型",
+                    'page-number': "3/6",
+                    'page': f"{output_dir2}/{distribution}/{os_arch[0]}-{os_arch[1]}/{major_version}/{major_version}",
+                    'choose': generate_choose_lines_for_package_type(filtered, pkg),
+                    'next_page-url': f"https://zkitefly.github.io/PCL2-java_download_page/{output_dir2}/{distribution}/{os_arch[0]}-{os_arch[1]}/{major_version}/{{0}}/{{0}}.json"
+                }
+                write_xaml_file(major_version_xaml_path, generate_xaml_from_template(template_1, replacements))
 
-        # 为版本生成 XAML 文件
-        pkg = package_type + ("fx" if javafx_bundled else "")
-        pkg_path = os.path.join(os_arch_path, pkg)
-        os.makedirs(pkg_path, exist_ok=True)
-        
-        template = template_1
-        replacements.update({
-            "title": "选择包类型",
-            "page-number": "3/6",
-            "page": f"{distribution}/{os_arch}/{pkg}/{pkg}.xaml",
-            "choose": generate_pkg_content(filtered_data, javafx_bundled),
-            "next_page-url": f"https://baidu.com/{distribution}/{os_arch}/{pkg}/{pkg}.json"
-        })
-        xaml_content = process_xaml_template(template, replacements)
-        write_file(os.path.join(pkg_path, f"{pkg}.xaml"), xaml_content)
+                # Step 4: Generate /[distribution]/[operating_system]-[architecture]/[major_version]/[pkg]/[pkg].xaml
+                for pkg in get_unique_values(filtered, 'package_type'):
+                    pkg_path = os.path.join(major_version_path, pkg)
+                    pkg_xaml_path = os.path.join(pkg_path, f"{pkg}.xaml")
+                    replacements = {
+                        'title': "选择 Java 版本",
+                        'page-number': "4/6",
+                        'page': f"{output_dir2}/{distribution}/{os_arch[0]}-{os_arch[1]}/{major_version}/{pkg}/{pkg}",
+                        'choose': generate_choose_lines_for_java_version(filtered),
+                        'next_page-url': f"https://zkitefly.github.io/PCL2-java_download_page/{output_dir2}/{distribution}/{os_arch[0]}-{os_arch[1]}/{major_version}/{pkg}/{{0}}/{{0}}.json"
+                    }
+                    write_xaml_file(pkg_xaml_path, generate_xaml_from_template(template_1, replacements))
 
-        # 为包生成 XAML 文件
-        java_version_content = generate_java_version_content(filtered_data)
-        java_version_path = os.path.join(pkg_path, java_version)
-        os.makedirs(java_version_path, exist_ok=True)
+                    # Step 5: Generate /[distribution]/[operating_system]-[architecture]/[major_version]/[pkg]/[java_version]/[java_version].xaml
+                    for java_version in get_unique_values(filtered, 'java_version'):
+                        java_version_path = os.path.join(pkg_path, java_version)
+                        java_version_xaml_path = os.path.join(java_version_path, f"{java_version}.xaml")
+                        replacements = {
+                            'title': "选择文件类型",
+                            'page-number': "5/6",
+                            'page': f"{output_dir2}/{distribution}/{os_arch[0]}-{os_arch[1]}/{major_version}/{pkg}/{java_version}/{java_version}",
+                            'choose': generate_choose_lines_for_archive_type(filtered),
+                            'next_page-url': f"https://zkitefly.github.io/PCL2-java_download_page/{output_dir2}/{distribution}/{os_arch[0]}-{os_arch[1]}/{major_version}/{pkg}/{java_version}/{{0}}/{{0}}.json"
+                        }
+                        write_xaml_file(java_version_xaml_path, generate_xaml_from_template(template_1, replacements))
 
-        template = template_1
-        replacements.update({
-            "title": "选择 Java 版本",
-            "page-number": "4/6",
-            "page": f"{distribution}/{os_arch}/{pkg}/{java_version}/{java_version}.xaml",
-            "choose": java_version_content,
-            "next_page-url": f"https://baidu.com/{distribution}/{os_arch}/{pkg}/{java_version}.json"
-        })
-        xaml_content = process_xaml_template(template, replacements)
-        write_file(os.path.join(java_version_path, f"{java_version}.xaml"), xaml_content)
+                        # Step 6: Generate /[distribution]/[operating_system]-[architecture]/[major_version]/[pkg]/[java_version]/[archive_type]/[archive_type].xaml
+                        for archive_type in get_unique_values(filtered, 'archive_type'):
+                            archive_type_path = os.path.join(java_version_path, archive_type)
+                            archive_type_xaml_path = os.path.join(archive_type_path, f"{archive_type}.xaml")
+                            replacements = {
+                                'title': "下载！",
+                                'page-number': "6/6",
+                                'page': f"{output_dir2}/{distribution}/{os_arch[0]}-{os_arch[1]}/{major_version}/{pkg}/{java_version}/{archive_type}/{archive_type}",
+                                'file_name': package['filename'],
+                                'download-url': package['links']['pkg_download_redirect'],
+                                'info': f"https://api.foojay.io/disco/v3.0/packages/{package['id']}",
+                                'raw-download-url': package['links']['pkg_info_uri']
+                            }
+                            write_xaml_file(archive_type_xaml_path, generate_xaml_from_template(template_2, replacements))
 
-        # 生成文件类型 XAML 文件
-        archive_type_content = generate_archive_type_content(filtered_data)
-        archive_path = os.path.join(java_version_path, archive_type)
-        os.makedirs(archive_path, exist_ok=True)
+    # Generate JSON file for each XAML file
+    generate_json_for_xaml_files(output_dir)
 
-        template = template_2
-        replacements.update({
-            "title": "下载！",
-            "page-number": "6/6",
-            "page": f"{distribution}/{os_arch}/{pkg}/{java_version}/{archive_type}/{archive_type}.xaml",
-            "file_name": filename,
-            "download-url": pkg_download_url,
-            "info": pkg_info_url
-        })
-        xaml_content = process_xaml_template(template, replacements)
-        write_file(os.path.join(archive_path, f"{archive_type}.xaml"), xaml_content)
+def generate_choose_lines(filtered, os_key, arch_key):
+    lines = []
+    for os_arch in get_unique_pairs(filtered, os_key, arch_key):
+        lines.append(f'<local:MyComboBoxItem Content="{os_arch[0]}-{os_arch[1]}"/>')
+    return "\n".join(lines)
 
-    # 最后生成对应的 JSON 文件
-    generate_json_files(output_dir)
+def generate_choose_lines_for_major_version(filtered, os_arch):
+    lines = [f'<local:MyComboBoxItem Content="{major_version}"/>'
+             for major_version in get_unique_values(filtered, 'major_version')]
+    return "\n".join(lines)
 
-def generate_system_arch_content(filtered_data):
-    """生成系统架构选择项"""
-    unique_system_arch = set((item["operating_system"], item["architecture"]) for item in filtered_data)
-    return "\n".join(f'<local:MyComboBoxItem Content="{os}-{arch}"/>' for os, arch in unique_system_arch)
+def generate_choose_lines_for_package_type(filtered, pkg):
+    lines = [f'<local:MyComboBoxItem Content="{pkg}"/>']
+    return "\n".join(lines)
 
-def generate_version_content(filtered_data):
-    """生成 Java 版本选择项"""
-    unique_versions = set(item["major_version"] for item in filtered_data)
-    return "\n".join(f'<local:MyComboBoxItem Content="{version}"/>' for version in unique_versions)
+def generate_choose_lines_for_java_version(filtered):
+    lines = [f'<local:MyComboBoxItem Content="{java_version}"/>'
+             for java_version in get_unique_values(filtered, 'java_version')]
+    return "\n".join(lines)
 
-def generate_pkg_content(filtered_data, javafx_bundled):
-    """生成包类型选择项"""
-    unique_pkg_types = set(item["package_type"] + ("fx" if javafx_bundled else "") for item in filtered_data)
-    return "\n".join(f'<local:MyComboBoxItem Content="{pkg}"/>' for pkg in unique_pkg_types)
+def generate_choose_lines_for_archive_type(filtered):
+    lines = [f'<local:MyComboBoxItem Content="{archive_type}"/>'
+             for archive_type in get_unique_values(filtered, 'archive_type')]
+    return "\n".join(lines)
 
-def generate_java_version_content(filtered_data):
-    """生成 Java 版本选择项"""
-    unique_java_versions = set(item["java_version"] for item in filtered_data)
-    return "\n".join(f'<local:MyComboBoxItem Content="{java_version}"/>' for java_version in unique_java_versions)
+def get_unique_pairs(filtered, key1, key2):
+    pairs = []
+    for package in filtered:
+        if key1 in package and key2 in package:
+            pairs.append((package[key1], package[key2]))
+    return list(set(pairs))
 
-def generate_archive_type_content(filtered_data):
-    """生成档案类型选择项"""
-    unique_archive_types = set(item["archive_type"] for item in filtered_data)
-    return "\n".join(f'<local:MyComboBoxItem Content="{archive_type}"/>' for archive_type in unique_archive_types)
+def get_unique_values(filtered, key):
+    return list(set(item[key] for item in filtered if key in item))
 
-def generate_json_files(output_dir):
-    """扫描并生成与 xaml 文件对应的 json 文件"""
+def generate_json_for_xaml_files(output_dir):
     for root, dirs, files in os.walk(output_dir):
         for file in files:
             if file.endswith(".xaml"):
-                json_file = os.path.splitext(file)[0] + ".json"
-                json_content = {"Title": "Java 下载"}
-                write_file(os.path.join(root, json_file), json.dumps(json_content, indent=4))
-
-def main():
-    """主函数"""
-    if len(sys.argv) < 2:
-        print("请提供 JSON 文件名作为参数")
-        return
-
-    json_file = sys.argv[1]
-    packages_data = load_json(json_file)
-
-    # 读取模板文件
-    with open('1.txt', 'r', encoding='utf-8') as f:
-        template_1 = f.read()
-    
-    with open('2.txt', 'r', encoding='utf-8') as f:
-        template_2 = f.read()
-
-    # 处理数据并生成 XAML 文件
-    output_dir = "output"
-    process_data(packages_data["result"], template_1, template_2, output_dir)
+                json_file_path = os.path.splitext(os.path.join(root, file))[0] + ".json"
+                if not os.path.exists(json_file_path):
+                    json_content = {"Title": "Java 下载"}
+                    with open(json_file_path, 'w') as json_file:
+                        json.dump(json_content, json_file)
 
 if __name__ == "__main__":
-    main()
+    json_file = sys.argv[1]
+    packages_data = process_json_file(json_file)
+    
+    with open("1.txt", 'r') as f:
+        template_1 = f.read()
+    
+    with open("2.txt", 'r') as f:
+        template_2 = f.read()
+    
+    output_dir = './choose'
+    output_dir2 = 'choose'
+    process_packages(packages_data, template_1, template_2, output_dir)
