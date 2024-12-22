@@ -1,42 +1,42 @@
 <local:MyCard Title="BellSoft Liberica" Margin="0,5">
     <StackPanel Margin="25,40,23,15">
     <TextBlock TextWrapping="Wrap" Margin="0,0,0,4" Text="轻量级且高性能的 JVM，支持广泛的平台和工具链。对 Minecraft 提供快速启动和较低内存占用的优势。" />
-    <local:MyButton Margin="0,5,0,6" Width="250" Height="35" Text="下载→" EventType="打开帮助" EventData="https://pcl2-java-download-page.zkitefly.eu.org/liberica"/>
+    <local:MyButton Margin="0,5,0,6" Width="250" Height="35" Text="下载→" EventType="打开帮助" EventData="https://pcl2-java-download-page.zkitefly.eu.org/liberica.json"/>
     </StackPanel>
 </local:MyCard>
 
 <local:MyCard Title="Eclipse Temurin" Margin="0,5">
     <StackPanel Margin="25,40,23,15">
     <TextBlock TextWrapping="Wrap" Margin="0,0,0,4" Text="一个可靠且免费开源的 JVM，社区支持活跃。对 Minecraft 提供稳定运行和高兼容性的优势。" />
-    <local:MyButton Margin="0,5,0,6" Width="250" Height="35" Text="下载→" EventType="打开帮助" EventData="https://pcl2-java-download-page.zkitefly.eu.org/temurin"/>
+    <local:MyButton Margin="0,5,0,6" Width="250" Height="35" Text="下载→" EventType="打开帮助" EventData="https://pcl2-java-download-page.zkitefly.eu.org/temurin.json"/>
     </StackPanel>
 </local:MyCard>
 
 <local:MyCard Title="Azul Zulu" Margin="0,5">
     <StackPanel Margin="25,40,23,15">
     <TextBlock TextWrapping="Wrap" Margin="0,0,0,4" Text="以其卓越的性能和低延迟著称，适合高负载场景。对 Minecraft 提供更流畅的游戏体验。" />
-    <local:MyButton Margin="0,5,0,6" Width="250" Height="35" Text="下载→" EventType="打开帮助" EventData="https://pcl2-java-download-page.zkitefly.eu.org/zulu"/>
+    <local:MyButton Margin="0,5,0,6" Width="250" Height="35" Text="下载→" EventType="打开帮助" EventData="https://pcl2-java-download-page.zkitefly.eu.org/zulu.json"/>
     </StackPanel>
 </local:MyCard>
 
 <local:MyCard Title="Amazon Corretto" Margin="0,5">
     <StackPanel Margin="25,40,23,15">
     <TextBlock TextWrapping="Wrap" Margin="0,0,0,4" Text="由 Amazon 提供的免费生产就绪 JVM，专注于长时间运行的稳定性。对 Minecraft 提供高可靠性的支持。" />
-    <local:MyButton Margin="0,5,0,6" Width="250" Height="35" Text="下载→" EventType="打开帮助" EventData="https://pcl2-java-download-page.zkitefly.eu.org/corretto"/>
+    <local:MyButton Margin="0,5,0,6" Width="250" Height="35" Text="下载→" EventType="打开帮助" EventData="https://pcl2-java-download-page.zkitefly.eu.org/corretto.json"/>
     </StackPanel>
 </local:MyCard>
 
 <local:MyCard Title="IBM Semeru (OpenJ9)" Margin="0,5">
     <StackPanel Margin="25,40,23,15">
     <TextBlock TextWrapping="Wrap" Margin="0,0,0,4" Text="基于 OpenJ9 的 JVM，提供超低内存占用和快速启动性能。对 Minecraft 提供较好的低资源占用体验。" />
-    <local:MyButton Margin="0,5,0,6" Width="250" Height="35" Text="下载→" EventType="打开帮助" EventData="https://pcl2-java-download-page.zkitefly.eu.org/semeru"/>
+    <local:MyButton Margin="0,5,0,6" Width="250" Height="35" Text="下载→" EventType="打开帮助" EventData="https://pcl2-java-download-page.zkitefly.eu.org/semeru.json"/>
     </StackPanel>
 </local:MyCard>
 
 <local:MyCard Title="Oracle GraalVM" Margin="0,5">
     <StackPanel Margin="25,40,23,15">
     <TextBlock TextWrapping="Wrap" Margin="0,0,0,4" Text="高性能多语言运行时，支持复杂的优化和本地镜像生成。对 Minecraft 提供更高帧率和优化潜力。" />
-    <local:MyButton Margin="0,5,0,6" Width="250" Height="35" Text="下载→" EventType="打开帮助" EventData="https://pcl2-java-download-page.zkitefly.eu.org/graalvm"/>
+    <local:MyButton Margin="0,5,0,6" Width="250" Height="35" Text="下载→" EventType="打开帮助" EventData="https://pcl2-java-download-page.zkitefly.eu.org/graalvm.json"/>
     </StackPanel>
 </local:MyCard>
 
