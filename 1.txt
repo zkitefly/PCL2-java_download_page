@@ -22,9 +22,9 @@
                     <ColumnDefinition Width="1*" />
                </Grid.ColumnDefinitions>
                <local:MyButton Grid.Column="0" Margin="0,0,10,0" Height="35" Text="打开下载器"
-                    EventType="打开帮助" EventData="https://zkitefly.github.io/PCL2-java_download_page/download.json" ToolTip="使用 PCL 的高速多线程下载引擎下载任意文件。" />
+                    EventType="打开帮助" EventData="https://vip.123pan.cn/1821946486/PCL2-java_download_page/download.json" ToolTip="使用 PCL 的高速多线程下载引擎下载任意文件。" />
                <local:MyButton Grid.Column="1" Margin="0,0,0,0" Height="35" Text="打开快捷跳转"
-                    EventType="打开帮助" EventData="https://zkitefly.github.io/PCL2-java_download_page/goto.json" ToolTip="输入主页路径快捷跳转对应主页页面。" />
+                    EventType="打开帮助" EventData="https://vip.123pan.cn/1821946486/PCL2-java_download_page/goto.json" ToolTip="输入主页路径快捷跳转对应主页页面。" />
           </Grid>
           <Grid>
                <Grid.ColumnDefinitions>
