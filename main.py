@@ -67,8 +67,8 @@ def handle_request(params):
         choose_content = "\n".join([f'<local:MyComboBoxItem Content="{comb}"/>' for comb in os_arch_list])
         content = template1.replace('[choose]', choose_content)
         content = content.replace('[title]', '选择系统类型和系统架构')
-        content = content.replace('[page]', f'/{distribution}')
-        content = content.replace('[next_page-url]', f'https://baidu.com/{distribution}/{{0}}.json')
+        content = content.replace('[page]', f'{distribution}')
+        content = content.replace('[next_page-url]', f'https://pcl2-java-download-page.zkitefly.eu.org/{distribution}/{{0}}.json')
         content = content.replace('[page-number]', '1/6')
         return content
     
@@ -80,8 +80,8 @@ def handle_request(params):
         choose_content = "\n".join([f'<local:MyComboBoxItem Content="{mv}"/>' for mv in major_versions])
         content = template1.replace('[choose]', choose_content)
         content = content.replace('[title]', '选择 Java 大版本')
-        content = content.replace('[page]', f'/{distribution}/{os_arch}')
-        content = content.replace('[next_page-url]', f'https://baidu.com/{distribution}/{os_arch}/{{0}}.json')
+        content = content.replace('[page]', f'{distribution}/{os_arch}')
+        content = content.replace('[next_page-url]', f'https://pcl2-java-download-page.zkitefly.eu.org/{distribution}/{os_arch}/{{0}}.json')
         content = content.replace('[page-number]', '2/6')
         return content
     
@@ -97,8 +97,8 @@ def handle_request(params):
         choose_content = "\n".join([f'<local:MyComboBoxItem Content="{pkg}"/>' for pkg in package_types])
         content = template1.replace('[choose]', choose_content)
         content = content.replace('[title]', '选择包类型')
-        content = content.replace('[page]', f'/{distribution}/{os_arch}/{major_version}')
-        content = content.replace('[next_page-url]', f'https://baidu.com/{distribution}/{os_arch}/{major_version}/{{0}}.json')
+        content = content.replace('[page]', f'{distribution}/{os_arch}/{major_version}')
+        content = content.replace('[next_page-url]', f'https://pcl2-java-download-page.zkitefly.eu.org/{distribution}/{os_arch}/{major_version}/{{0}}.json')
         content = content.replace('[page-number]', '3/6')
         return content
     
@@ -110,8 +110,8 @@ def handle_request(params):
         choose_content = "\n".join([f'<local:MyComboBoxItem Content="{jv}"/>' for jv in java_versions])
         content = template1.replace('[choose]', choose_content)
         content = content.replace('[title]', '选择 Java 版本')
-        content = content.replace('[page]', f'/{distribution}/{os_arch}/{major_version}/{pkg}')
-        content = content.replace('[next_page-url]', f'https://baidu.com/{distribution}/{os_arch}/{major_version}/{pkg}/{{0}}.json')
+        content = content.replace('[page]', f'{distribution}/{os_arch}/{major_version}/{pkg}')
+        content = content.replace('[next_page-url]', f'https://pcl2-java-download-page.zkitefly.eu.org/{distribution}/{os_arch}/{major_version}/{pkg}/{{0}}.json')
         content = content.replace('[page-number]', '4/6')
         return content
     
@@ -123,8 +123,8 @@ def handle_request(params):
         choose_content = "\n".join([f'<local:MyComboBoxItem Content="{at}"/>' for at in archive_types])
         content = template1.replace('[choose]', choose_content)
         content = content.replace('[title]', '选择文件类型')
-        content = content.replace('[page]', f'/{distribution}/{os_arch}/{major_version}/{pkg}/{java_version}')
-        content = content.replace('[next_page-url]', f'https://baidu.com/{distribution}/{os_arch}/{major_version}/{pkg}/{java_version}/{{0}}.json')
+        content = content.replace('[page]', f'{distribution}/{os_arch}/{major_version}/{pkg}/{java_version}')
+        content = content.replace('[next_page-url]', f'https://pcl2-java-download-page.zkitefly.eu.org/{distribution}/{os_arch}/{major_version}/{pkg}/{java_version}/{{0}}.json')
         content = content.replace('[page-number]', '5/6')
         return content
     
@@ -136,7 +136,7 @@ def handle_request(params):
             item = filtered_data[0]
             content = template2.replace('[title]', '下载！')
             content = content.replace('[page-number]', '6/6')
-            content = content.replace('[page]', f'/{distribution}/{os_arch}/{major_version}/{pkg}/{java_version}/{archive_type}')
+            content = content.replace('[page]', f'{distribution}/{os_arch}/{major_version}/{pkg}/{java_version}/{archive_type}')
             content = content.replace('[file_name]', item['filename'])
             content = content.replace('[download-url]', item['links']['pkg_download_redirect'])
             content = content.replace('[info]', f"https://api.foojay.io/disco/v3.0/packages/{item['id']}")
