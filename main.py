@@ -6,8 +6,8 @@ from functools import lru_cache
 app = Flask(__name__)
 
 DATA_API = "https://api.foojay.io/disco/v3.0/packages"
-TEMPLATE1_URL = "https://github.com/zkitefly/PCL2-java_download_page/raw/refs/heads/main/docs/1.txt"
-TEMPLATE2_URL = "https://github.com/zkitefly/PCL2-java_download_page/raw/refs/heads/main/docs/2.txt"
+TEMPLATE1_URL = "https://github.com/zkitefly/PCL2-java_download_page/raw/refs/heads/main/1.txt"
+TEMPLATE2_URL = "https://github.com/zkitefly/PCL2-java_download_page/raw/refs/heads/main/2.txt"
 
 @lru_cache(maxsize=128)
 def get_template(url):
