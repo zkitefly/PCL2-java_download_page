@@ -6,13 +6,12 @@ from functools import lru_cache
 app = Flask(__name__)
 
 DATA_API = "https://api.foojay.io/disco/v3.0/packages"
-TEMPLATE1_URL = "https://github.com/zkitefly/PCL2-java_download_page/raw/refs/heads/main/1.txt"
-TEMPLATE2_URL = "https://github.com/zkitefly/PCL2-java_download_page/raw/refs/heads/main/2.txt"
+TEMPLATE1_PATH = "1.txt"
+TEMPLATE2_PATH = "2.txt"
 
-@lru_cache(maxsize=128)
-def get_template(url):
-    response = requests.get(url)
-    return response.text
+def get_template(path):
+    with open(path, 'r', encoding='utf-8') as file:
+        return file.read()
 
 @lru_cache(maxsize=128)
 def get_data_api():
@@ -53,8 +52,8 @@ def handle_request(params):
     if any(".json" in part for part in path_parts):
         return jsonify({"Title": "Java 下载"})
     
-    template1 = get_template(TEMPLATE1_URL)
-    template2 = get_template(TEMPLATE2_URL)
+    template1 = get_template(TEMPLATE1_PATH)
+    template2 = get_template(TEMPLATE2_PATH)
     
     if len(path_parts) == 1:
         distribution = path_parts[0]
