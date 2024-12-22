@@ -1,5 +1,34 @@
 {
-    "builds": [{ "src": "main.py", "use": "@vercel/python" }],
-    "routes": [{ "src": "/.*", "dest": "main.py" }],
-    "regions": ["hkg1"]
+    "builds": [
+        {
+            "src": "main.py",
+            "use": "@vercel/python"
+        }
+    ],
+    "routes": [
+        {
+            "src": "/.*",
+            "dest": "main.py"
+        }
+    ],
+    "regions": [
+        "hkg1"
+    ],
+    "redirects": [
+        {
+            "source": "/download.json",
+            "destination": "https://vip.123pan.cn/1821946486/PCL2-java_download_page/download.json",
+            "permanent": true
+        },
+        {
+            "source": "/Custom.json",
+            "destination": "https://vip.123pan.cn/1821946486/PCL2-java_download_page/Custom.json",
+            "permanent": true
+        },
+        {
+            "source": "/goto.json",
+            "destination": "https://vip.123pan.cn/1821946486/PCL2-java_download_page/goto.json",
+            "permanent": true
+        }
+    ]
 }
