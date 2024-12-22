@@ -1,6 +1,6 @@
 # PCL2-java_download_page
  
-一个PCL2的 Java 下载工具主页
+一个 [PCL2](https://afdian.com/a/ltcat) 的 Java 下载工具主页
 
 数据来自 [foojayio/discoapi](https://github.com/foojayio/discoapi)
 
