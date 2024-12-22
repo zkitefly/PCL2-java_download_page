@@ -47,7 +47,7 @@ def filter_packages(data, distribution=None, operating_system=None, architecture
 @app.route('/<path:params>', methods=['GET'])
 def handle_request(params):
     data = get_data_api()
-    path_parts = params.replace('.json', '').replace('.xaml', '').split('/')
+    path_parts = params.replace('.xaml', '').split('/')
     
     if any(".json" in part for part in path_parts):
         return jsonify({"Title": "Java 下载"})
