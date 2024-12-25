@@ -9,5 +9,5 @@
 主页地址：
 
 ```
-https://vip.123pan.cn/1821946486/PCL2-java_download_page/
+https://vip.123pan.cn/1821946486/PCL2-java_download_page/Custom.xaml
 ```
