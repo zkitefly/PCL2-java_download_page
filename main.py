@@ -47,10 +47,13 @@ def filter_packages(data, distribution=None, operating_system=None, architecture
 @app.route('/<path:params>', methods=['GET'])
 def handle_request(params):
     data = get_data_api()
-    path_parts = params.replace('.xaml', '').split('/')
-    
-    if any(".json" in part for part in path_parts):
+
+    if ".xaml" in params:
+        path_parts = params.replace('.xaml', '').split('/')
+    elif ".json" in params:
         return jsonify({"Title": "Java 下载"})
+    else:
+        return "Invalid request path"
     
     template1 = get_template(TEMPLATE1_PATH)
     template2 = get_template(TEMPLATE2_PATH)
@@ -104,7 +107,9 @@ def handle_request(params):
     elif len(path_parts) == 4:
         distribution, os_arch, major_version, pkg = path_parts
         os, arch = os_arch.split('-')
-        filtered_data = filter_packages(data, distribution=distribution, operating_system=os, architecture=arch, major_version=int(major_version), package_type=pkg)
+        javafx_bundled = 'fx' in pkg
+        pkg = pkg.replace('fx', '')
+        filtered_data = filter_packages(data, distribution=distribution, operating_system=os, architecture=arch, major_version=int(major_version), package_type=pkg, javafx_bundled=javafx_bundled)
         java_versions = set([item['java_version'] for item in filtered_data])
         choose_content = "\n".join([f'<local:MyComboBoxItem Content="{jv}"/>' for jv in java_versions])
         content = template1.replace('[choose]', choose_content)
@@ -117,7 +122,9 @@ def handle_request(params):
     elif len(path_parts) == 5:
         distribution, os_arch, major_version, pkg, java_version = path_parts
         os, arch = os_arch.split('-')
-        filtered_data = filter_packages(data, distribution=distribution, operating_system=os, architecture=arch, major_version=int(major_version), package_type=pkg, java_version=java_version)
+        javafx_bundled = 'fx' in pkg
+        pkg = pkg.replace('fx', '')
+        filtered_data = filter_packages(data, distribution=distribution, operating_system=os, architecture=arch, major_version=int(major_version), package_type=pkg, javafx_bundled=javafx_bundled, java_version=java_version)
         archive_types = set([item['archive_type'] for item in filtered_data])
         choose_content = "\n".join([f'<local:MyComboBoxItem Content="{at}"/>' for at in archive_types])
         content = template1.replace('[choose]', choose_content)
@@ -130,7 +137,9 @@ def handle_request(params):
     elif len(path_parts) == 6:
         distribution, os_arch, major_version, pkg, java_version, archive_type = path_parts
         os, arch = os_arch.split('-')
-        filtered_data = filter_packages(data, distribution=distribution, operating_system=os, architecture=arch, major_version=int(major_version), package_type=pkg, java_version=java_version, archive_type=archive_type)
+        javafx_bundled = 'fx' in pkg
+        pkg = pkg.replace('fx', '')
+        filtered_data = filter_packages(data, distribution=distribution, operating_system=os, architecture=arch, major_version=int(major_version), package_type=pkg, javafx_bundled=javafx_bundled, java_version=java_version, archive_type=archive_type)
         if filtered_data:
             item = filtered_data[0]
             content = template2.replace('[title]', '下载！')
