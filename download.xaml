@@ -15,27 +15,36 @@
           </Grid>
      </StackPanel>
 </local:MyCard>
+
 <local:MyCard Margin="0,5" Title="加速网站">
      <StackPanel Margin="24,40,24,15">
-          <local:MyHint IsWarn="False" Text="这些站点不由 PCL 和本主页提供，遇到问题请联系对应站点的站长。&#xA;复制加速链接后直接在需要下载的文件的链接前粘贴即可。" Margin="0,0,0,10" />
+          <local:MyHint IsWarn="False"
+               Text="这些站点不由 PCL 和本主页提供，遇到问题请联系对应站点的站长。&#xA;复制加速链接后直接在需要下载的文件的链接前粘贴即可。"
+               Margin="0,0,0,10" />
           <Grid>
                <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*" />
                     <ColumnDefinition Width="1*" />
                </Grid.ColumnDefinitions>
-               <local:MyButton Grid.Column="0" Margin="0,0,10,0" Height="35" Text="GitHub Proxy（ghp.ci）"
+               <local:MyButton Grid.Column="0" Margin="0,0,10,0" Height="35"
+                    Text="GitHub Proxy（ghp.ci）"
                     EventType="复制文本" EventData="https://ghp.ci/" ToolTip="适用于 GitHub 文件链接下载的站点。" />
-               <local:MyButton Grid.Column="1" Margin="0,0,0,0" Height="35" Text="GitHub Proxy（ghproxy.cn）"
-                    EventType="复制文本" EventData="https://www.ghproxy.cn/" ToolTip="适用于 GitHub 文件链接下载的站点。" />
+               <local:MyButton Grid.Column="1" Margin="0,0,0,0" Height="35"
+                    Text="GitHub Proxy（ghproxy.cn）"
+                    EventType="复制文本" EventData="https://www.ghproxy.cn/"
+                    ToolTip="适用于 GitHub 文件链接下载的站点。" />
           </Grid>
           <Grid>
                <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*" />
                     <ColumnDefinition Width="1*" />
                </Grid.ColumnDefinitions>
-               <local:MyButton Grid.Column="0" Margin="0,10,10,0" Height="35" Text="zkitefly Proxy（cfp.zkitefly.eu.org）"
-                    EventType="复制文本" EventData="https://cfp.zkitefly.eu.org/" ToolTip="适用于任意文件链接下载的站点。"/>
-               <local:MyButton Grid.Column="1" Margin="0,10,0,0" Height="35" Text="GitHub Proxy（ghproxy.cc）"
+               <local:MyButton Grid.Column="0" Margin="0,10,10,0" Height="35"
+                    Text="zkitefly Proxy（cfp.zkitefly.eu.org）"
+                    EventType="复制文本" EventData="https://cfp.zkitefly.eu.org/"
+                    ToolTip="适用于任意文件链接下载的站点。" />
+               <local:MyButton Grid.Column="1" Margin="0,10,0,0" Height="35"
+                    Text="GitHub Proxy（ghproxy.cc）"
                     EventType="复制文本" EventData="https://ghproxy.cc/" ToolTip="适用于 GitHub 文件链接下载的站点。" />
           </Grid>
      </StackPanel>
@@ -47,9 +56,12 @@
                     <ColumnDefinition Width="1*" />
                     <ColumnDefinition Width="1*" />
                </Grid.ColumnDefinitions>
-               <local:MyButton Grid.Column="0" Margin="0,0,10,0" Height="35" Text="打开下载器" ToolTip="使用 PCL 的高速多线程下载引擎下载任意文件。" />
+               <local:MyButton Grid.Column="0" Margin="0,0,10,0" Height="35" Text="打开下载器"
+                    ToolTip="使用 PCL 的高速多线程下载引擎下载任意文件。" />
                <local:MyButton Grid.Column="1" Margin="0,0,0,0" Height="35" Text="打开快捷跳转"
-                    EventType="打开帮助" EventData="https://vip.123pan.cn/1821946486/PCL2-java_download_page/goto.json" ToolTip="输入主页路径快捷跳转对应主页页面。" />
+                    EventType="打开帮助"
+                    EventData="https://vip.123pan.cn/1821946486/PCL2-java_download_page/goto.json"
+                    ToolTip="输入主页路径快捷跳转对应主页页面。" />
           </Grid>
           <Grid>
                <Grid.ColumnDefinitions>
