@@ -2,9 +2,9 @@
     <StackPanel Margin="25,40,23,15">
        <local:MyButton Margin="0,5,0,6" Width="250" Height="35" Text="下载文件" EventType="下载文件" EventData="[download-url]|[file_name]" ToolTip="将使用 PCL 下载该文件。"/>
        <local:MyButton Margin="0,5,0,6" Width="250" Height="35" Text="复制下载链接" EventType="复制文本" EventData="[download-url]" ToolTip="将复制 '[download-url]'。注意,此链接并不是真正的下载链接，该链接在访问后会重定向至真正的下载链接。若需要文件加速，需要获取原始下载链接后再配合加速服务下载。"/>
-       <local:MyButton Margin="0,5,0,6" Width="250" Height="35" Text="复制文本名称" EventType="复制文本" EventData="[file_name]" ToolTip="文件名 '[file_name']。"/>
-       <local:MyButton Margin="0,5,0,6" Width="250" Height="35" Text="查询原始下载链接" EventType="打开网页" EventData="[info]" ToolTip="将打开 '[raw-download-url]'，'direct_download_uri' 字段的值即为原始下载链接。"/>
-       <local:MyButton Margin="0,5,0,6" Width="250" Height="35" Text="文件详情" EventType="打开网页" EventData="将打开 [info] 查询文件详情。"/>
+       <local:MyButton Margin="0,5,0,6" Width="250" Height="35" Text="复制文本名称" EventType="复制文本" EventData="[file_name]" ToolTip="文件名 '[file_name]'。"/>
+       <local:MyButton Margin="0,5,0,6" Width="250" Height="35" Text="查询原始下载链接" EventType="打开网页" EventData="[raw-download-url]" ToolTip="将打开 '[raw-download-url]'，'direct_download_uri' 字段的值即为原始下载链接。"/>
+       <local:MyButton Margin="0,5,0,6" Width="250" Height="35" Text="文件详情" EventType="打开网页" EventData="[info]" ToolTip="将打开 [info] 查询文件详情。"/>
     </StackPanel>
 </local:MyCard>
 <local:MyCard Margin="0,5" Title="工具">
