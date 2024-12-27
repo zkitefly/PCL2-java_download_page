@@ -74,6 +74,7 @@ def handle_request(params):
             comb = f"{item['operating_system']}-{item['architecture']}"
             if comb not in os_arch_list:
                 os_arch_list.append(comb)
+        os_arch_list.sort(key=lambda x: (x.split('-')[0], x.split('-')[1]), reverse=True)
         choose_content = "\n".join([f'<local:MyComboBoxItem Content="{comb}"/>' for comb in os_arch_list])
         content = template1.replace('[choose]', choose_content)
         content = content.replace('[title]', '选择系统类型和系统架构')
@@ -87,6 +88,7 @@ def handle_request(params):
         os, arch = os_arch.split('-')
         filtered_data = filter_packages(data, distribution=distribution, operating_system=os, architecture=arch)
         major_versions = set([item['major_version'] for item in filtered_data])
+        major_versions = sorted(major_versions, reverse=True)
         choose_content = "\n".join([f'<local:MyComboBoxItem Content="{mv}"/>' for mv in major_versions])
         content = template1.replace('[choose]', choose_content)
         content = content.replace('[title]', '选择 Java 大版本')
@@ -104,6 +106,7 @@ def handle_request(params):
             pkg = f"{item['package_type']}fx" if item['javafx_bundled'] else item['package_type']
             if pkg not in package_types:
                 package_types.append(pkg)
+        package_types = sorted(package_types, reverse=False)
         choose_content = "\n".join([f'<local:MyComboBoxItem Content="{pkg}"/>' for pkg in package_types])
         content = template1.replace('[choose]', choose_content)
         content = content.replace('[title]', '选择包类型')
@@ -119,6 +122,7 @@ def handle_request(params):
         pkg = pkg.replace('fx', '')
         filtered_data = filter_packages(data, distribution=distribution, operating_system=os, architecture=arch, major_version=int(major_version), package_type=pkg, javafx_bundled=javafx_bundled)
         java_versions = set([item['java_version'] for item in filtered_data])
+        java_versions = sorted(java_versions, reverse=True)
         choose_content = "\n".join([f'<local:MyComboBoxItem Content="{jv}"/>' for jv in java_versions])
         content = template1.replace('[choose]', choose_content)
         content = content.replace('[title]', '选择 Java 版本')
@@ -134,6 +138,7 @@ def handle_request(params):
         pkg = pkg.replace('fx', '')
         filtered_data = filter_packages(data, distribution=distribution, operating_system=os, architecture=arch, major_version=int(major_version), package_type=pkg, javafx_bundled=javafx_bundled, java_version=java_version)
         archive_types = set([item['archive_type'] for item in filtered_data])
+        archive_types = sorted(archive_types, reverse=False)
         choose_content = "\n".join([f'<local:MyComboBoxItem Content="{at}"/>' for at in archive_types])
         content = template1.replace('[choose]', choose_content)
         content = content.replace('[title]', '选择文件类型')
