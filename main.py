@@ -46,7 +46,7 @@ def filter_packages(data, distribution=None, operating_system=None, architecture
 
 @app.route('/', methods=['GET'])
 def handle_root_request():
-    return redirect("/Custom.xaml", code=301)
+    return redirect(request.host_url.rstrip('/') + "/Custom.xaml", code=301)
 
 @app.route('/<path:params>', methods=['GET'])
 def handle_request(params):
