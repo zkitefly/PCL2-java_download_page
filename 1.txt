@@ -9,7 +9,7 @@
 [choose]
                </local:MyComboBox>
                <local:MyButton HorizontalAlignment="Center" Width="80"
-                    Grid.Column="1" Text="确定->" EventType="打开帮助"
+                    Grid.Column="1" Text="确定->" EventType="打开帮助" ToolTip="因数据量稍大，页面前往需要时间，请不要多次点击。"
                     EventData="{Binding Path=Text,ElementName=x,StringFormat=[next_page-url]}" />
           </Grid>
      </StackPanel>
