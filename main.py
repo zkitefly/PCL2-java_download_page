@@ -155,6 +155,7 @@ def handle_request(params):
             content = content.replace('[page]', f'{distribution}/{os_arch}/{major_version}/{pkg}/{java_version}/{archive_type}')
             content = content.replace('[file_name]', item['filename'])
             content = content.replace('[download-url]', item['links']['pkg_download_redirect'])
+            content = content.replace('[raw-download-url]', f"https://api.foojay.io/disco/v3.0/ids/{item['id']}")
             content = content.replace('[info]', f"https://api.foojay.io/disco/v3.0/packages/{item['id']}")
             return content
     
