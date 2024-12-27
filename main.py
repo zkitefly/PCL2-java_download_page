@@ -1,6 +1,6 @@
 import json
 import requests
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, redirect
 from functools import lru_cache
 
 app = Flask(__name__)
@@ -46,6 +46,7 @@ def filter_packages(data, distribution=None, operating_system=None, architecture
 
 @app.route('/<path:params>', methods=['GET'])
 def handle_request(params):
+    server_address = request.host_url.rstrip('/')
     data = get_data_api()
 
     if ".xaml" in params:
@@ -59,6 +60,9 @@ def handle_request(params):
     template2 = get_template(TEMPLATE2_PATH)
     
     if len(path_parts) == 1:
+        if path_parts in ['Custom', 'download', 'goto']:
+            return redirect(f"https://vip.123pan.cn/1821946486/PCL2-java_download_page/{distribution}.xaml", code=301)
+
         distribution = path_parts[0]
         filtered_data = filter_packages(data, distribution=distribution)
         os_arch_list = []
@@ -70,7 +74,7 @@ def handle_request(params):
         content = template1.replace('[choose]', choose_content)
         content = content.replace('[title]', '选择系统类型和系统架构')
         content = content.replace('[page]', f'{distribution}')
-        content = content.replace('[next_page-url]', f'https://pcl2-java-download-page.zkitefly.eu.org/{distribution}/{{0}}.json')
+        content = content.replace('[next_page-url]', f'{server_address}/{distribution}/{{0}}.json')
         content = content.replace('[page-number]', '1/6')
         return content
     
@@ -83,7 +87,7 @@ def handle_request(params):
         content = template1.replace('[choose]', choose_content)
         content = content.replace('[title]', '选择 Java 大版本')
         content = content.replace('[page]', f'{distribution}/{os_arch}')
-        content = content.replace('[next_page-url]', f'https://pcl2-java-download-page.zkitefly.eu.org/{distribution}/{os_arch}/{{0}}.json')
+        content = content.replace('[next_page-url]', f'{server_address}/{distribution}/{os_arch}/{{0}}.json')
         content = content.replace('[page-number]', '2/6')
         return content
     
@@ -100,7 +104,7 @@ def handle_request(params):
         content = template1.replace('[choose]', choose_content)
         content = content.replace('[title]', '选择包类型')
         content = content.replace('[page]', f'{distribution}/{os_arch}/{major_version}')
-        content = content.replace('[next_page-url]', f'https://pcl2-java-download-page.zkitefly.eu.org/{distribution}/{os_arch}/{major_version}/{{0}}.json')
+        content = content.replace('[next_page-url]', f'{server_address}/{distribution}/{os_arch}/{major_version}/{{0}}.json')
         content = content.replace('[page-number]', '3/6')
         return content
     
@@ -115,7 +119,7 @@ def handle_request(params):
         content = template1.replace('[choose]', choose_content)
         content = content.replace('[title]', '选择 Java 版本')
         content = content.replace('[page]', f'{distribution}/{os_arch}/{major_version}/{pkg}')
-        content = content.replace('[next_page-url]', f'https://pcl2-java-download-page.zkitefly.eu.org/{distribution}/{os_arch}/{major_version}/{pkg}/{{0}}.json')
+        content = content.replace('[next_page-url]', f'{server_address}/{distribution}/{os_arch}/{major_version}/{pkg}/{{0}}.json')
         content = content.replace('[page-number]', '4/6')
         return content
     
@@ -130,7 +134,7 @@ def handle_request(params):
         content = template1.replace('[choose]', choose_content)
         content = content.replace('[title]', '选择文件类型')
         content = content.replace('[page]', f'{distribution}/{os_arch}/{major_version}/{pkg}/{java_version}')
-        content = content.replace('[next_page-url]', f'https://pcl2-java-download-page.zkitefly.eu.org/{distribution}/{os_arch}/{major_version}/{pkg}/{java_version}/{{0}}.json')
+        content = content.replace('[next_page-url]', f'{server_address}/{distribution}/{os_arch}/{major_version}/{pkg}/{java_version}/{{0}}.json')
         content = content.replace('[page-number]', '5/6')
         return content
     
