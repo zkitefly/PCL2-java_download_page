@@ -122,7 +122,8 @@ def handle_request(params):
         pkg = pkg.replace('fx', '')
         filtered_data = filter_packages(data, distribution=distribution, operating_system=os, architecture=arch, major_version=int(major_version), package_type=pkg, javafx_bundled=javafx_bundled)
         java_versions = set([item['java_version'] for item in filtered_data])
-        java_versions = sorted(java_versions, reverse=True)
+        java_versions = sorted(java_versions, key=lambda v: [int(part) for part in v.split("+")[0].split(".")], reverse=True)
+        
         choose_content = "\n".join([f'<local:MyComboBoxItem Content="{jv}"/>' for jv in java_versions])
         content = template1.replace('[choose]', choose_content)
         content = content.replace('[title]', '选择 Java 版本')
