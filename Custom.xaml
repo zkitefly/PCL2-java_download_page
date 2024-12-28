@@ -58,6 +58,15 @@
      </StackPanel>
 </local:MyCard>
 
+<local:MyCard Title="Alibaba Dragonwell" Margin="0,5">
+     <StackPanel Margin="25,40,23,15">
+          <TextBlock TextWrapping="Wrap" Margin="0,0,0,4"
+               Text="由阿里巴巴提供。高性能和可靠性，优化了大规模服务的运行。对 Minecraft 提供稳定和高效的支持。" />
+          <local:MyButton Margin="0,5,0,6" Width="250" Height="35" Text="下载→" EventType="打开帮助"
+               EventData="https://pcl2-java-download-page.zkitefly.eu.org/dragonwell.json" />
+     </StackPanel>
+</local:MyCard>
+
 <local:MyCard Margin="0,5" Title="工具">
      <StackPanel Margin="24,40,24,15">
           <Grid>
