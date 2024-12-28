@@ -2,8 +2,10 @@ import json
 import requests
 from flask import Flask, request, jsonify, redirect
 from functools import lru_cache
+from flask_caching import Cache
 
 app = Flask(__name__)
+cache = Cache(app, config={'CACHE_TYPE': 'SimpleCache'})
 
 DATA_API = "https://api.foojay.io/disco/v3.0/packages"
 TEMPLATE1_PATH = "1.txt"
@@ -48,6 +50,7 @@ def filter_packages(data, distribution=None, operating_system=None, architecture
 def handle_root_request():
     return redirect(request.host_url.rstrip('/') + "/Custom.xaml", code=301)
 
+@cache.cached(timeout=3600, query_string=True)
 @app.route('/<path:params>', methods=['GET'])
 def handle_request(params):
     server_address = request.host_url.rstrip('/')
