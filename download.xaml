@@ -27,8 +27,8 @@
                     <ColumnDefinition Width="1*" />
                </Grid.ColumnDefinitions>
                <local:MyButton Grid.Column="0" Margin="0,0,10,0" Height="35"
-                    Text="GitHub Proxy（ghp.ci）"
-                    EventType="复制文本" EventData="https://ghp.ci/" ToolTip="适用于 GitHub 文件链接下载的站点。" />
+                    Text="GitHub Proxy（ghgo.xyz）"
+                    EventType="复制文本" EventData="https://ghgo.xyz/" ToolTip="适用于 GitHub 文件链接下载的站点。" />
                <local:MyButton Grid.Column="1" Margin="0,0,0,0" Height="35"
                     Text="GitHub Proxy（ghproxy.cn）"
                     EventType="复制文本" EventData="https://www.ghproxy.cn/"
