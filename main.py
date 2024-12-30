@@ -61,7 +61,7 @@ def handle_request(params):
     elif ".json" in params:
         return jsonify({"Title": "Java 下载"})
     else:
-        return "Invalid request path"
+        return "错误的路径请求"
     
     template1 = get_template(TEMPLATE1_PATH)
     template2 = get_template(TEMPLATE2_PATH)
@@ -122,8 +122,8 @@ def handle_request(params):
         distribution, os_arch, major_version, pkg = path_parts
         os, arch = os_arch.split('-')
         javafx_bundled = 'fx' in pkg
-        # pkg = pkg.replace('fx', '')
-        filtered_data = filter_packages(data, distribution=distribution, operating_system=os, architecture=arch, major_version=int(major_version), package_type=pkg, javafx_bundled=javafx_bundled)
+        pkg1 = pkg.replace('fx', '')
+        filtered_data = filter_packages(data, distribution=distribution, operating_system=os, architecture=arch, major_version=int(major_version), package_type=pkg1, javafx_bundled=javafx_bundled)
         java_versions = set([item['java_version'] for item in filtered_data])
         java_versions = sorted(java_versions, key=lambda v: [int(part) for part in v.split("+")[0].split(".")], reverse=True)
         
@@ -139,8 +139,8 @@ def handle_request(params):
         distribution, os_arch, major_version, pkg, java_version = path_parts
         os, arch = os_arch.split('-')
         javafx_bundled = 'fx' in pkg
-        # pkg = pkg.replace('fx', '')
-        filtered_data = filter_packages(data, distribution=distribution, operating_system=os, architecture=arch, major_version=int(major_version), package_type=pkg, javafx_bundled=javafx_bundled, java_version=java_version)
+        pkg1 = pkg.replace('fx', '')
+        filtered_data = filter_packages(data, distribution=distribution, operating_system=os, architecture=arch, major_version=int(major_version), package_type=pkg1, javafx_bundled=javafx_bundled, java_version=java_version)
         archive_types = set([item['archive_type'] for item in filtered_data])
         archive_types = sorted(archive_types, reverse=False)
         choose_content = "\n".join([f'<local:MyComboBoxItem Content="{at}"/>' for at in archive_types])
@@ -155,8 +155,8 @@ def handle_request(params):
         distribution, os_arch, major_version, pkg, java_version, archive_type = path_parts
         os, arch = os_arch.split('-')
         javafx_bundled = 'fx' in pkg
-        # pkg = pkg.replace('fx', '')
-        filtered_data = filter_packages(data, distribution=distribution, operating_system=os, architecture=arch, major_version=int(major_version), package_type=pkg, javafx_bundled=javafx_bundled, java_version=java_version, archive_type=archive_type)
+        pkg1 = pkg.replace('fx', '')
+        filtered_data = filter_packages(data, distribution=distribution, operating_system=os, architecture=arch, major_version=int(major_version), package_type=pkg1, javafx_bundled=javafx_bundled, java_version=java_version, archive_type=archive_type)
         if filtered_data:
             item = filtered_data[0]
             content = template2.replace('[title]', '下载！')
@@ -168,7 +168,7 @@ def handle_request(params):
             content = content.replace('[info]', f"https://api.foojay.io/disco/v3.0/packages/{item['id']}")
             return content
     
-    return "Invalid request path"
+    return "错误的路径请求"
 
 if __name__ == '__main__':
     app.run(debug=True)
