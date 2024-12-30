@@ -122,7 +122,7 @@ def handle_request(params):
         distribution, os_arch, major_version, pkg = path_parts
         os, arch = os_arch.split('-')
         javafx_bundled = 'fx' in pkg
-        pkg = pkg.replace('fx', '')
+        # pkg = pkg.replace('fx', '')
         filtered_data = filter_packages(data, distribution=distribution, operating_system=os, architecture=arch, major_version=int(major_version), package_type=pkg, javafx_bundled=javafx_bundled)
         java_versions = set([item['java_version'] for item in filtered_data])
         java_versions = sorted(java_versions, key=lambda v: [int(part) for part in v.split("+")[0].split(".")], reverse=True)
@@ -139,7 +139,7 @@ def handle_request(params):
         distribution, os_arch, major_version, pkg, java_version = path_parts
         os, arch = os_arch.split('-')
         javafx_bundled = 'fx' in pkg
-        pkg = pkg.replace('fx', '')
+        # pkg = pkg.replace('fx', '')
         filtered_data = filter_packages(data, distribution=distribution, operating_system=os, architecture=arch, major_version=int(major_version), package_type=pkg, javafx_bundled=javafx_bundled, java_version=java_version)
         archive_types = set([item['archive_type'] for item in filtered_data])
         archive_types = sorted(archive_types, reverse=False)
@@ -155,7 +155,7 @@ def handle_request(params):
         distribution, os_arch, major_version, pkg, java_version, archive_type = path_parts
         os, arch = os_arch.split('-')
         javafx_bundled = 'fx' in pkg
-        pkg = pkg.replace('fx', '')
+        # pkg = pkg.replace('fx', '')
         filtered_data = filter_packages(data, distribution=distribution, operating_system=os, architecture=arch, major_version=int(major_version), package_type=pkg, javafx_bundled=javafx_bundled, java_version=java_version, archive_type=archive_type)
         if filtered_data:
             item = filtered_data[0]
